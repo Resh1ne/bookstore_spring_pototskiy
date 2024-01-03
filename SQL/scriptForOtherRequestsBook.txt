@@ -1,0 +1,16 @@
+    SELECT * FROM books
+	SELECT * FROM languages
+	SELECT * FROM genres
+
+	SELECT b.id, b.author, b.isbn, b.title, b.pages, b.publication_year, g.genre, l.language, b.price FROM books b
+	JOIN genres g ON b.genre_id = g.id
+	JOIN languages l ON b.language_id = l.id
+	WHERE b.id = 21
+
+	INSERT INTO books (author, isbn, title, pages, publication_year, genre_id, language_id, price)
+	VALUES ('a', 'a', 'a', 20, 2022, (SELECT id FROM genres g WHERE g.genre = 'REALISM'),
+	(SELECT id FROM languages l WHERE l.language = 'ENGLISH'), 10.11);
+
+	UPDATE books SET author = 'b', isbn = 'b', title = 'b', pages = 1, publication_year = 2022,
+	genre_id = (SELECT id FROM genres g WHERE g.genre = 'SCIENCE_FICTION'),
+	language_id = (SELECT id FROM languages l WHERE l.language = 'CHINESE'), price = 1 WHERE id = 21;

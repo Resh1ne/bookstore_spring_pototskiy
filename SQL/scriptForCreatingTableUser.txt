@@ -1,0 +1,42 @@
+CREATE TABLE roles (
+	id BIGSERIAL PRIMARY KEY,
+	role VARCHAR(50)
+);
+INSERT INTO roles (role)
+VALUES
+	('ADMIN'),
+	('MANAGER'),
+	('CUSTOMER');
+
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    "password" VARCHAR(255),
+    age INTEGER,
+	role_id INT2 REFERENCES roles
+);
+INSERT INTO users (first_name, last_name, role_id, email, "password", age)
+VALUES
+    ('John', 'Doe', '2', 'john.doe@email.com', 'password123', 25),
+    ('Jane', 'Smith', '3', 'jane.smith@email.com', 'adminPass456', 30),
+    ('Bob', 'Johnson', '3', 'bob.johnson@email.com', 'userPass789', 22),
+    ('Alice', 'Williams', '3', 'alice.williams@email.com', 'password456', 28),
+    ('Charlie', 'Brown', '1', 'charlie.brown@email.com', 'adminPass789', 35),
+    ('Eva', 'Davis', '2', 'eva.davis@email.com', 'userPass123', 26),
+    ('Frank', 'Miller', '3', 'frank.miller@email.com', 'password789', 32),
+    ('Grace', 'Wilson', '1', 'grace.wilson@email.com', 'adminPass123', 29),
+    ('Henry', 'Jones', '2', 'henry.jones@email.com', 'userPass456', 31),
+    ('Isabel', 'Taylor', '3', 'isabel.taylor@email.com', 'password789', 27),
+    ('Jack', 'White', '1', 'jack.white@email.com', 'adminPass456', 34),
+    ('Karen', 'Moore', '2', 'karen.moore@email.com', 'userPass789', 23),
+    ('Leo', 'Clark', '3', 'leo.clark@email.com', 'password123', 33),
+    ('Mia', 'Thomas', '1', 'mia.thomas@email.com', 'adminPass789', 28),
+    ('Nathan', 'Lee', '3', 'nathan.lee@email.com', 'userPass123', 30),
+    ('Olivia', 'Hall', '3', 'olivia.hall@email.com', 'password456', 25),
+    ('Paul', 'Smith', '2', 'paul.smith@email.com', 'adminPass123', 29),
+    ('Quincy', 'Adams', '2', 'quincy.adams@email.com', 'userPass789', 27),
+    ('Rachel', 'Moore', '3', 'rachel.moore@email.com', 'password123', 31),
+    ('Samuel', 'Jones', '3', 'samuel.jones@email.com', 'adminPass456', 32);

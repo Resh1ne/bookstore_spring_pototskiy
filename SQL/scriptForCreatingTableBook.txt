@@ -1,0 +1,72 @@
+CREATE TABLE genres (
+	id BIGSERIAL PRIMARY KEY,
+	genre VARCHAR(50)
+);
+INSERT INTO genres (genre)
+VALUES
+	('REALISM'),
+	('SCIENCE_FICTION'),
+	('THRILLER'),
+	('ROMANCE'),
+	('ADVENTURE'),
+	('HORROR'),
+	('HISTORICAL_FICTION'),
+	('DRAMA'),
+	('COMEDY'),
+	('FANTASY'),
+	('NON_FICTION');
+
+
+CREATE TABLE languages (
+	id BIGSERIAL PRIMARY KEY,
+	"language" VARCHAR(50)
+);
+INSERT INTO languages ("language")
+VALUES
+	('ENGLISH'),
+	('CHINESE'),
+	('SPANISH'),
+	('ARABIC'),
+	('FRENCH'),
+	('RUSSIAN'),
+	('PORTUGUESE'),
+	('JAPANESE'),
+	('GERMAN'),
+	('KOREAN'),
+	('TURKISH'),
+	('ITALIAN');
+
+
+CREATE TABLE books (
+    id BIGSERIAL PRIMARY KEY,
+    author VARCHAR(255),
+    isbn VARCHAR(20),
+    title VARCHAR(255),
+    pages INTEGER,
+    publication_year INTEGER,
+    genre_id INT2 REFERENCES genres,
+    language_id INT2 REFERENCES languages,
+    price DECIMAL(10, 2)
+);
+INSERT INTO books (author, isbn, title, pages, publication_year, genre_id, language_id, price)
+VALUES
+    ('Author1', 'ISBN111111', 'Title1', 300, 2000, 1, 1, 25.99),
+	('Author2', 'ISBN222222', 'Title2', 250, 2013, 2, 2, 19.99),
+	('Author3', 'ISBN333333', 'Title3', 400, 1999, 3, 3, 29.99),
+	('Author4', 'ISBN444444', 'Title4', 350, 1823, 4, 1, 35.00),
+	('Author5', 'ISBN555555', 'Title5', 320, 2005, 5, 4, 27.50),
+	('Author6', 'ISBN666666', 'Title6', 280, 2013, 6, 2, 22.50),
+	('Author7', 'ISBN777777', 'Title7', 310, 1953, 7, 5, 31.50),
+	('Author8', 'ISBN888888', 'Title8', 260, 2000, 8, 3, 18.75),
+	('Author9', 'ISBN999999', 'Title9', 380, 2013, 9, 12, 24.99),
+	('Author10', 'ISBN101010', 'Title10', 290, 2022, 10, 8, 28.50),
+	('Author11', 'ISBN111111', 'Title11', 330, 2011, 11, 8, 21.99),
+	('Author12', 'ISBN121212', 'Title12', 270, 1987, 6, 9, 30.00),
+	('Author13', 'ISBN131313', 'Title13', 400, 1845, 1, 6, 26.50),
+	('Author14', 'ISBN141414', 'Title14', 320, 1867, 2, 7, 33.25),
+	('Author15', 'ISBN151515', 'Title15', 350, 1999, 3, 11, 19.99),
+	('Author16', 'ISBN161616', 'Title16', 310, 1987, 4, 3, 29.99),
+	('Author17', 'ISBN171717', 'Title17', 280, 1999, 5, 10, 25.00),
+	('Author18', 'ISBN181818', 'Title18', 330, 1982, 6, 10, 22.99),
+	('Author19', 'ISBN191919', 'Title19', 370, 2018, 7, 8, 27.50),
+	('Author20', 'ISBN202020', 'Title20', 300, 2016, 8, 9, 31.99);
