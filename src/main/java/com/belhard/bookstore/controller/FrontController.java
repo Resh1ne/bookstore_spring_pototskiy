@@ -12,6 +12,8 @@ import java.io.IOException;
 @Log4j2
 @WebServlet("/controller")
 public class FrontController extends HttpServlet {
+    public static final String REDIRECT = "redirect:";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         process(req, resp);
@@ -24,14 +26,14 @@ public class FrontController extends HttpServlet {
 
     private void process(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String page;
-        try {
-            String command = req.getParameter("command");
-            Command controller = CommandFactory.INSTANCE.get(command);
-            page = controller.execute(req);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            page = CommandFactory.INSTANCE.get("error").execute(req);
+        String command = req.getParameter("command");
+        Command controller = CommandFactory.INSTANCE.get(command);
+        page = controller.execute(req);
+        if (page.startsWith(REDIRECT)) {
+            resp.sendRedirect(req.getContextPath() + "/" + page.substring(REDIRECT.length()));
+        } else {
+            req.getRequestDispatcher(page).forward(req, resp);
         }
-        req.getRequestDispatcher(page).forward(req, resp);
+
     }
 }

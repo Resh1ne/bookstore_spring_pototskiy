@@ -1,6 +1,7 @@
 package com.belhard.bookstore.controller.impl;
 
 import com.belhard.bookstore.controller.Command;
+import com.belhard.bookstore.controller.FrontController;
 import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
@@ -10,14 +11,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EditUserCommand implements Command {
     private final UserService userService;
+
     @Override
     public String execute(HttpServletRequest req) {
         UserDto user = process(req);
 
         UserDto createdUser = userService.update(user);
 
-        req.setAttribute("user", createdUser);
-        return "jsp/user/user.jsp";
+        return FrontController.REDIRECT + "controller?command=user&id=" + createdUser.getId();
     }
 
     private static UserDto process(HttpServletRequest req) {
