@@ -1,27 +1,30 @@
 package com.belhard.bookstore.data.dao.impl;
 
-import com.belhard.bookstore.data.connection.DataSource;
 import com.belhard.bookstore.data.dao.UserDao;
 import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Repository
 public class UserDaoImpl implements UserDao {
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private static final String CREATION_QUERY = "INSERT INTO users " +
             "(first_name, last_name, role_id, email, \"password\", age) " +
             "VALUES (?, ?, (SELECT id FROM roles r WHERE r.role = ?), ?, ?, ?)";
@@ -42,22 +45,20 @@ public class UserDaoImpl implements UserDao {
             "WHERE u.last_name = ?";
     private static final String UPDATE_QUERY = "UPDATE users " +
             "SET " +
-            "first_name = ?, " +
-            "last_name = ?, " +
-            "email = ?," +
-            "password = ?, " +
-            "age = ?, " +
-            "role_id = (SELECT id FROM roles r WHERE r.role = ?) " +
-            "WHERE id = ?";
+            "first_name = :first_name, " +
+            "last_name = :last_name, " +
+            "email = :email," +
+            "password = :password, " +
+            "age = :age, " +
+            "role_id = (SELECT id FROM roles r WHERE r.role = :role) " +
+            "WHERE id = :id";
     private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
     private static final String COUNT_QUERY = "SELECT COUNT(*) FROM users";
-    private static final Logger log = LogManager.getLogger(UserDaoImpl.class);
-
 
     @Override
     public User create(User user) {
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(CREATION_QUERY, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
@@ -65,16 +66,17 @@ public class UserDaoImpl implements UserDao {
             statement.setString(4, user.getEmail());
             statement.setString(5, user.getPassword());
             setNullInt(6, user.getAge(), statement);
-            statement.executeUpdate();
-            ResultSet keys = statement.getGeneratedKeys();
-            if (keys.next()) {
-                long id = keys.getLong("id");
-                return findById(id);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return statement;
+        }, keyHolder);
+        List<Map<String, Object>> keys = keyHolder.getKeyList();
+        Long id = null;
+        for (Map<String, Object> key : keys) {
+            id = (Long) key.get("id");
         }
-        throw new RuntimeException("Can't create book: " + user);
+        if (id == null) {
+            throw new RuntimeException("Failed to create user");
+        }
+        return findById(id);
     }
 
     private void setNullInt(int index, Integer value, PreparedStatement statement) throws SQLException {
@@ -87,21 +89,10 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findById(Long id) {
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY);
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return mapRow(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        return jdbcTemplate.queryForObject(FIND_BY_ID_QUERY, this::mapRow, id);
     }
 
-    private static User mapRow(ResultSet resultSet) throws SQLException {
+    private User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         User user = new User();
         user.setAge(resultSet.getInt("age"));
         user.setEmail(resultSet.getString("email"));
@@ -115,106 +106,48 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
-        List<User> users = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(FIND_ALL_QUERY);
-            while (resultSet.next()) {
-                User user = mapRow(resultSet);
-                users.add(user);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return users;
+        return jdbcTemplate.query(FIND_ALL_QUERY, this::mapRow);
     }
 
     @Override
     public User update(User user) {
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPassword());
-            setNullInt(5, user.getAge(), statement);
-            statement.setString(6, user.getRole().toString());
-            statement.setLong(7, user.getId());
-
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                return findById(user.getId());
-            } else {
-                throw new RuntimeException("Failed to update book. No rows affected.");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("first_name", user.getFirstName())
+                .addValue("last_name", user.getLastName())
+                .addValue("email", user.getEmail())
+                .addValue("password", user.getPassword())
+                .addValue("age", user.getAge())
+                .addValue("role", user.getRole().toString())
+                .addValue("id", user.getId());
+        int rowsUpdated = namedParameterJdbcTemplate.update(UPDATE_QUERY, params);
+        if (rowsUpdated == 0) {
+            throw new RuntimeException("Can't update user with id: " + user.getId());
         }
+        return findById(user.getId());
     }
 
     @Override
     public boolean delete(Long id) {
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
-            statement.setLong(1, id);
-            int rowsAffected = statement.executeUpdate();
-
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        int rowsUpdated = jdbcTemplate.update(DELETE_QUERY, id);
+        return rowsUpdated == 1;
     }
 
     @Override
     public User findByEmail(String email) {
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            PreparedStatement statement = connection.prepareStatement(FIND_BY_EMAIL);
-            statement.setString(1, email);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return mapRow(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        return jdbcTemplate.queryForObject(FIND_BY_EMAIL, this::mapRow, email);
     }
 
     @Override
     public List<User> findByLastName(String lastName) {
-        List<User> users = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            PreparedStatement statement = connection.prepareStatement(FIND_BY_LAST_NAME);
-            statement.setString(1, lastName);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                User user = mapRow(resultSet);
-                users.add(user);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return users;
+        return jdbcTemplate.query(FIND_BY_LAST_NAME, this::mapRow, lastName);
     }
 
     @Override
     public long countAll() {
-        try (Connection connection = dataSource.getConnection()) {
-            log.debug("connecting to the database");
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(COUNT_QUERY);
-            if (resultSet.next()) {
-                return resultSet.getLong("count");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        Long count = jdbcTemplate.queryForObject(COUNT_QUERY, long.class);
+        if (count == null) {
+            return 0;
         }
-        throw new RuntimeException("The values could not be calculated");
+        return count;
     }
 }
