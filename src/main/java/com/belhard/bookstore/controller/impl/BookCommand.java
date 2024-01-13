@@ -5,10 +5,12 @@ import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
+@Controller("book")
 public class BookCommand implements Command {
     private final BookService bookService;
 
