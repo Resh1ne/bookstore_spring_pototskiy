@@ -8,10 +8,12 @@ import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 
 import java.math.BigDecimal;
 
 @RequiredArgsConstructor
+@Controller("edit_book")
 public class EditBookCommand implements Command {
     private final BookService bookService;
 

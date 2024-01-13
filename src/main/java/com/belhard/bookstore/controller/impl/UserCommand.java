@@ -5,10 +5,12 @@ import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
+@Controller("user")
 public class UserCommand implements Command {
     private final UserService userService;
 

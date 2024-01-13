@@ -26,14 +26,18 @@ public class FrontController extends HttpServlet {
 
     private void process(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String page;
-        String command = req.getParameter("command");
-        Command controller = CommandFactory.INSTANCE.get(command);
-        page = controller.execute(req);
-        if (page.startsWith(REDIRECT)) {
-            resp.sendRedirect(req.getContextPath() + "/" + page.substring(REDIRECT.length()));
-        } else {
-            req.getRequestDispatcher(page).forward(req, resp);
+        try {
+            String command = req.getParameter("command");
+            Command controller = AppListener.getContext().getBean(command, Command.class);
+            page = controller.execute(req);
+            if (page.startsWith(REDIRECT)) {
+                resp.sendRedirect(req.getContextPath() + "/" + page.substring(REDIRECT.length()));
+                return;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            page = AppListener.getContext().getBean("error", Command.class).execute(req);
         }
-
+        req.getRequestDispatcher(page).forward(req, resp);
     }
 }

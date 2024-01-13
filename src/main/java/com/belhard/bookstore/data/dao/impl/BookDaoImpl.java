@@ -8,6 +8,7 @@ import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Repository
 public class BookDaoImpl implements BookDao {
     private final DataSource dataSource;
     private static final String CREATION_QUERY = "INSERT INTO books " +

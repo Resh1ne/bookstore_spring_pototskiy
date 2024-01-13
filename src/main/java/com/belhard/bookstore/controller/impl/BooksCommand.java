@@ -5,10 +5,12 @@ import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Controller("books")
 public class BooksCommand implements Command {
     private final BookService bookService;
 

@@ -6,7 +6,9 @@ import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 
+@Controller("create_user")
 @RequiredArgsConstructor
 public class CreateUserCommand implements Command {
     private final UserService userService;
