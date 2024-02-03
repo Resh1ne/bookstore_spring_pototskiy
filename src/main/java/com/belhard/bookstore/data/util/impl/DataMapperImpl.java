@@ -42,7 +42,7 @@ public class DataMapperImpl implements DataMapper {
     }
 
     @Override
-    public List<User> toEntity(List<UserDto> userDto) {
+    public List<User> toUsersEntity(List<UserDto> userDto) {
         return userDto.stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
@@ -79,7 +79,7 @@ public class DataMapperImpl implements DataMapper {
     }
 
     @Override
-    public List<Book> toBookEntity(List<BookDto> bookDto) {
+    public List<Book> toBooksEntity(List<BookDto> bookDto) {
         return bookDto.stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());

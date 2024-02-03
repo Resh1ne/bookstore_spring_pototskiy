@@ -10,8 +10,8 @@ import java.util.List;
 public interface DataMapper {
     UserDto toDto(User user);
     User toEntity(UserDto userDto);
-    List<User> toEntity(List<UserDto> userDto);
+    List<User> toUsersEntity(List<UserDto> userDto);
     BookDto toDto(Book book);
     Book toEntity(BookDto bookDto);
-    List<Book> toBookEntity(List<BookDto> bookDto);
+    List<Book> toBooksEntity(List<BookDto> bookDto);
 }
