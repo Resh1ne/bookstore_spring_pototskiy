@@ -1,7 +1,7 @@
 package com.belhard.bookstore.data.dao.impl;
 
 import com.belhard.bookstore.data.dao.UserDao;
-import com.belhard.bookstore.data.entity.User;
+import com.belhard.bookstore.data.dto.UserDto;
 import com.belhard.bookstore.data.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,8 +23,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Repository
 public class UserDaoImpl implements UserDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private static final String CREATION_QUERY = "INSERT INTO users " +
             "(first_name, last_name, role_id, email, \"password\", age) " +
             "VALUES (?, ?, (SELECT id FROM roles r WHERE r.role = ?), ?, ?, ?)";
@@ -54,9 +52,11 @@ public class UserDaoImpl implements UserDao {
             "WHERE id = :id";
     private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
     private static final String COUNT_QUERY = "SELECT COUNT(*) FROM users";
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public User create(User user) {
+    public UserDto create(UserDto user) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(CREATION_QUERY, Statement.RETURN_GENERATED_KEYS);
@@ -88,12 +88,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findById(Long id) {
+    public UserDto findById(Long id) {
         return jdbcTemplate.queryForObject(FIND_BY_ID_QUERY, this::mapRow, id);
     }
 
-    private User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        User user = new User();
+    private UserDto mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        UserDto user = new UserDto();
         user.setAge(resultSet.getInt("age"));
         user.setEmail(resultSet.getString("email"));
         user.setId(resultSet.getLong("id"));
@@ -105,12 +105,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserDto> findAll() {
         return jdbcTemplate.query(FIND_ALL_QUERY, this::mapRow);
     }
 
     @Override
-    public User update(User user) {
+    public UserDto update(UserDto user) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("first_name", user.getFirstName())
                 .addValue("last_name", user.getLastName())
@@ -133,12 +133,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findByEmail(String email) {
+    public UserDto findByEmail(String email) {
         return jdbcTemplate.queryForObject(FIND_BY_EMAIL, this::mapRow, email);
     }
 
     @Override
-    public List<User> findByLastName(String lastName) {
+    public List<UserDto> findByLastName(String lastName) {
         return jdbcTemplate.query(FIND_BY_LAST_NAME, this::mapRow, lastName);
     }
 
