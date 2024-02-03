@@ -18,4 +18,6 @@ public interface UserRepository {
     User update(User user);
 
     boolean delete(Long id);
+
+    long countAll();
 }

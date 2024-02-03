@@ -52,4 +52,8 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean delete(Long id) {
         return userDao.delete(id);
     }
+
+    public long countAll() {
+        return userDao.countAll();
+    }
 }
