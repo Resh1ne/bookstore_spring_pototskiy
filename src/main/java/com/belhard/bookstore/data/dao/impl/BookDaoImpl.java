@@ -1,7 +1,7 @@
 package com.belhard.bookstore.data.dao.impl;
 
 import com.belhard.bookstore.data.dao.BookDao;
-import com.belhard.bookstore.data.entity.Book;
+import com.belhard.bookstore.data.dto.BookDto;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
 import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +64,7 @@ public class BookDaoImpl implements BookDao {
     private static final String COUNT_QUERY = "SELECT COUNT(*) FROM books";
 
     @Override
-    public Book create(Book book) {
+    public BookDto create(BookDto book) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(CREATION_QUERY, Statement.RETURN_GENERATED_KEYS);
@@ -106,27 +106,27 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public List<Book> findAll() {
+    public List<BookDto> findAll() {
         return jdbcTemplate.query(FIND_ALL_QUERY, this::mapRow);
     }
 
     @Override
-    public Book findById(Long id) {
+    public BookDto findById(Long id) {
         return jdbcTemplate.queryForObject(FIND_BY_ID_QUERY, this::mapRow, id);
     }
 
     @Override
-    public Book findByIsbn(String isbn) {
+    public BookDto findByIsbn(String isbn) {
         return jdbcTemplate.queryForObject(FIND_BY_ISBN, this::mapRow, isbn);
     }
 
     @Override
-    public List<Book> findByAuthor(String author) {
+    public List<BookDto> findByAuthor(String author) {
         return jdbcTemplate.query(FIND_BY_AUTHOR_QUERY, this::mapRow, author);
     }
 
-    private Book mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        Book book = new Book();
+    private BookDto mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        BookDto book = new BookDto();
         book.setId(resultSet.getLong("id"));
         book.setAuthor(resultSet.getString("author"));
         book.setIsbn(resultSet.getString("isbn"));
@@ -140,7 +140,7 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public Book update(Book book) {
+    public BookDto update(BookDto book) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("author", book.getAuthor())
                 .addValue("isbn", book.getIsbn())
