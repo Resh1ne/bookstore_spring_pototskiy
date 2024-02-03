@@ -1,13 +1,13 @@
-package com.belhard.bookstore.util.impl;
+package com.belhard.bookstore.data.util.impl;
 
+import com.belhard.bookstore.data.dto.BookDto;
+import com.belhard.bookstore.data.dto.UserDto;
 import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
 import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import com.belhard.bookstore.data.entity.enums.Role;
-import com.belhard.bookstore.service.dto.BookDto;
-import com.belhard.bookstore.service.dto.UserDto;
-import com.belhard.bookstore.util.DataMapper;
+import com.belhard.bookstore.data.util.DataMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
