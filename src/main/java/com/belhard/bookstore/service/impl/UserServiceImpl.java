@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.CUSTOMER);
         user.setLastName(null);
         user.setFirstName(null);
-        user.setId(null);
         return user;
     }
     private User toUserEntity(UserDto dto) {
@@ -68,6 +67,7 @@ public class UserServiceImpl implements UserService {
     public UserDto update(UserDto dto) {
         log.debug("The service method is called");
         User user = toUserEntity(dto);
+        user.setId(dto.getId());
         User userCreated = userRepository.update(user);
         return toUserDto(userCreated);
     }
