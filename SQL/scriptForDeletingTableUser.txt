@@ -1,2 +1,0 @@
-DROP TABLE users CASCADE;
-DROP TABLE roles;

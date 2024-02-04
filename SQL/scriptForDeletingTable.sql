@@ -1,0 +1,5 @@
+DROP TABLE books CASCADE;
+DROP TABLE languages;
+DROP TABLE genres
+DROP TABLE users CASCADE;
+DROP TABLE roles;
