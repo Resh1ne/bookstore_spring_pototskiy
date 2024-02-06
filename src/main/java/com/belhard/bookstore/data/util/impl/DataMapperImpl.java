@@ -1,12 +1,17 @@
 package com.belhard.bookstore.data.util.impl;
 
 import com.belhard.bookstore.data.dto.BookDto;
+import com.belhard.bookstore.data.dto.OrderDto;
+import com.belhard.bookstore.data.dto.OrderInfoDto;
 import com.belhard.bookstore.data.dto.UserDto;
 import com.belhard.bookstore.data.entity.Book;
+import com.belhard.bookstore.data.entity.Order;
+import com.belhard.bookstore.data.entity.OrderInfo;
 import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
 import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import com.belhard.bookstore.data.entity.enums.Role;
+import com.belhard.bookstore.data.entity.enums.Status;
 import com.belhard.bookstore.data.util.DataMapper;
 import org.springframework.stereotype.Component;
 
@@ -83,5 +88,45 @@ public class DataMapperImpl implements DataMapper {
         return bookDto.stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDto toDto(Order entity) {
+        OrderDto dto = new OrderDto();
+        dto.setId(entity.getId());
+        dto.setUserId(entity.getUser().getId());
+        dto.setTotalCost(entity.getTotalCost());
+        dto.setStatus(Status.valueOf(entity.getStatus().name()));
+        return dto;
+    }
+
+    @Override
+    public OrderInfoDto toDto(OrderInfo entity) {
+        OrderInfoDto dto = new OrderInfoDto();
+        dto.setId(entity.getId());
+        dto.setBookPrice(entity.getBookPrice());
+        dto.setBookId(entity.getBook().getId());
+        dto.setBookQuantity(entity.getBookQuantity());
+        dto.setOrderId(entity.getOrderId());
+        return dto;
+    }
+
+    @Override
+    public Order toEntity(OrderDto dto) {
+        Order entity = new Order();
+        entity.setId(dto.getId());
+        entity.setTotalCost(dto.getTotalCost());
+        entity.setStatus(Status.valueOf(dto.getStatus().name()));
+        return entity;
+    }
+
+    @Override
+    public OrderInfo toEntity(OrderInfoDto dto) {
+        OrderInfo entity = new OrderInfo();
+        entity.setId(dto.getId());
+        entity.setBookPrice(dto.getBookPrice());
+        entity.setBookQuantity(dto.getBookQuantity());
+        entity.setOrderId(dto.getOrderId());
+        return entity;
     }
 }
