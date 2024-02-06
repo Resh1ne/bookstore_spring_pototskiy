@@ -113,3 +113,69 @@ VALUES
     ('Quincy', 'Adams', '2', 'quincy.adams@email.com', 'userPass789', 27),
     ('Rachel', 'Moore', '3', 'rachel.moore@email.com', 'password123', 31),
     ('Samuel', 'Jones', '3', 'samuel.jones@email.com', 'adminPass456', 32);
+
+
+CREATE TABLE statuses(
+        id BIGSERIAL PRIMARY KEY,
+        status_type VARCHAR(255)
+    );
+INSERT INTO statuses (id, status_type) VALUES
+    (1, 'PENDING'),
+    (2, 'PAID'),
+    (3, 'DELIVERED'),
+    (4, 'CANCELED');
+CREATE TABLE orders(
+        id BIGSERIAL PRIMARY KEY,
+        user_id SERIAL REFERENCES users,
+        total_cost DECIMAL(10, 2),
+        status_type_id SERIAL REFERENCES statuses
+    );
+CREATE TABLE order_items(
+        id BIGSERIAL PRIMARY KEY,
+        order_id INT2 REFERENCES orders,
+        book_id INT2 REFERENCES books,
+        quantity INT2,
+        price DECIMAL(10, 2)
+    );
+INSERT INTO orders (user_id, total_cost, status_type_id) VALUES
+    (1, 50.00, 1),
+    (2, 75.50, 2),
+    (3, 100.25, 3),
+    (4, 120.75, 1),
+    (5, 90.50, 2),
+    (6, 60.25, 3),
+    (7, 80.00, 1),
+    (8, 55.50, 2),
+    (9, 95.25, 3),
+    (10, 110.75, 1),
+    (11, 70.50, 2),
+    (12, 45.25, 3),
+    (13, 85.00, 1),
+    (14, 62.50, 2),
+    (15, 78.25, 3),
+    (16, 105.75, 1),
+    (17, 88.50, 2),
+    (18, 42.25, 3),
+    (19, 115.00, 1),
+    (20, 67.50, 2);
+INSERT INTO order_items (order_id, book_id, quantity, price) VALUES
+    (1, 1, 2, 25.00),
+    (1, 3, 1, 12.50),
+    (2, 5, 3, 10.00),
+    (2, 2, 1, 15.00),
+    (3, 4, 2, 20.00),
+    (3, 6, 1, 30.00),
+    (4, 8, 4, 7.50),
+    (4, 10, 2, 18.75),
+    (5, 12, 3, 9.00),
+    (5, 14, 1, 22.50),
+    (6, 16, 2, 15.00),
+    (6, 18, 1, 25.00),
+    (7, 20, 3, 12.00),
+    (7, 7, 1, 17.50),
+    (8, 11, 2, 22.50),
+    (8, 13, 1, 11.25),
+    (9, 15, 4, 6.25),
+    (9, 17, 2, 16.50),
+    (10, 19, 3, 14.00),
+    (10, 9, 1, 20.00);
