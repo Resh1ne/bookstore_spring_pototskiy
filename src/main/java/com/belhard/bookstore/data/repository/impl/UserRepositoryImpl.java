@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private final UserDao userDao;
     private final DataMapper dataMapper;
+
     @Override
     public User create(User user) {
         UserDto userDto = dataMapper.toDto(user);

@@ -9,8 +9,6 @@ import com.belhard.bookstore.data.entity.Order;
 import com.belhard.bookstore.data.entity.OrderInfo;
 import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
-import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
-import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.data.entity.enums.Status;
 import com.belhard.bookstore.data.util.DataMapper;
 import org.springframework.stereotype.Component;
@@ -26,7 +24,7 @@ public class DataMapperImpl implements DataMapper {
         userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
-        userDto.setRole(Role.valueOf(user.getRole().name()));
+        userDto.setRole(User.Role.valueOf(user.getRole().name()));
         userDto.setEmail(user.getEmail());
         userDto.setPassword(user.getPassword());
         userDto.setAge(user.getAge());
@@ -39,7 +37,7 @@ public class DataMapperImpl implements DataMapper {
         user.setId(userDto.getId());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        user.setRole(Role.valueOf(userDto.getRole().name()));
+        user.setRole(User.Role.valueOf(userDto.getRole().name()));
         user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
         user.setAge(userDto.getAge());
@@ -63,7 +61,7 @@ public class DataMapperImpl implements DataMapper {
         bookDto.setPages(book.getPages());
         bookDto.setPublicationYear(book.getPublicationYear());
         bookDto.setGenre(GenresOfTheBook.valueOf(book.getGenre().name()));
-        bookDto.setLanguage(LanguagesOfTheBook.valueOf(book.getLanguage().name()));
+        bookDto.setLanguage(Book.Language.valueOf(book.getLanguage().name()));
         bookDto.setPrice(book.getPrice());
         return bookDto;
     }
@@ -78,7 +76,7 @@ public class DataMapperImpl implements DataMapper {
         book.setPages(bookDto.getPages());
         book.setPublicationYear(bookDto.getPublicationYear());
         book.setGenre(GenresOfTheBook.valueOf(bookDto.getGenre().name()));
-        book.setLanguage(LanguagesOfTheBook.valueOf(bookDto.getLanguage().name()));
+        book.setLanguage(Book.Language.valueOf(bookDto.getLanguage().name()));
         book.setPrice(bookDto.getPrice());
         return book;
     }

@@ -35,7 +35,8 @@ public class OrderServiceImpl implements OrderService {
         dto.setUser(createdOrder.getUser());
         dto.setItems(createdOrder.getItems());
         dto.setTotalCost(calculateTotalCost(createdOrder));
-        dto.setStatus(Status.valueOf(createdOrder.getStatus().name()));
+//        dto.setStatus(Status.valueOf(createdOrder.getStatus().name()));
+        dto.setStatus(createdOrder.getStatus());
         updateTotalCost(createdOrder.getId());
         return dto;
     }

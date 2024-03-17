@@ -2,8 +2,8 @@ package com.belhard.bookstore.data.dao.impl;
 
 import com.belhard.bookstore.data.dao.BookDao;
 import com.belhard.bookstore.data.dto.BookDto;
+import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
-import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -134,7 +134,7 @@ public class BookDaoImpl implements BookDao {
         book.setPages(resultSet.getInt("pages"));
         book.setPublicationYear(resultSet.getInt("publication_year"));
         book.setGenre(GenresOfTheBook.valueOf(resultSet.getString("genre")));
-        book.setLanguage(LanguagesOfTheBook.valueOf(resultSet.getString("language")));
+        book.setLanguage(Book.Language.valueOf(resultSet.getString("language")));
         book.setPrice(resultSet.getBigDecimal("price"));
         return book;
     }

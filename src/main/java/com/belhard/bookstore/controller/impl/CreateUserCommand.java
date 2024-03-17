@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class CreateUserCommand implements Command {
     private final UserService userService;
+
     @Override
     public String execute(HttpServletRequest req) {
         String email = req.getParameter("email");

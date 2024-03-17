@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final DataMapper dataMapper;
     private final BookDao bookDao;
+
     @Override
     public Book create(Book book) {
         BookDto bookDto = dataMapper.toDto(book);

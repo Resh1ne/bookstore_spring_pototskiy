@@ -1,7 +1,6 @@
 package com.belhard.bookstore.data.entity;
 
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
-import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,6 +14,10 @@ public class Book {
     private Integer pages;
     private Integer publicationYear;
     private GenresOfTheBook genre;
-    private LanguagesOfTheBook language;
+    private Language language;
     private BigDecimal price;
+
+    public enum Language {
+        ENGLISH, CHINESE, SPANISH, ARABIC, FRENCH, RUSSIAN, PORTUGUESE, JAPANESE, GERMAN, KOREAN, TURKISH, ITALIAN
+    }
 }

@@ -4,6 +4,7 @@ import com.belhard.bookstore.data.entity.enums.Status;
 import lombok.Data;
 
 import java.math.BigDecimal;
+
 @Data
 public class OrderDto {
     private Long id;

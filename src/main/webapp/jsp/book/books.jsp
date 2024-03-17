@@ -21,7 +21,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           <td>${counter.count}</td>
           <td>${book.id}</td>
           <td>
-            <a href="controller?command=book&id=${book.id}">${book.title}</a>
+            <a href="controller?command=book&id=${book.id}"><c:out value="${book.title}"/></a>
           </td>
           <td>
             <a href="controller?command=edit_book_form&id=${book.id}">Edit</a>
