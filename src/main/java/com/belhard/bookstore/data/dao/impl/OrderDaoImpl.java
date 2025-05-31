@@ -19,11 +19,11 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class OrderDaoImpl implements OrderDao {
-    public static final String SELECT_BY_ID_QUERY = "SELECT o.id, o.user_id, o.total_cost, s.status_type  " +
+    public static final String FIND_BY_ID_QUERY = "SELECT o.id, o.user_id, o.total_cost, s.status_type  " +
             "FROM orders o JOIN statuses s ON o.status_type_id = s.id WHERE o.id = ?";
-    public static final String SELECT_ALL_QUERY = "SELECT o.id, o.user_id, o.total_cost, s.status_type FROM orders o " +
+    public static final String FIND_ALL_QUERY = "SELECT o.id, o.user_id, o.total_cost, s.status_type FROM orders o " +
             "JOIN statuses s ON o.status_type_id = s.id";
-    private static final String INSERT_QUERY = "INSERT INTO orders (user_id, total_cost, status_type_id) " +
+    private static final String CREATION_QUERY = "INSERT INTO orders (user_id, total_cost, status_type_id) " +
             "VALUES (:user_id, :total_cost, (SELECT id FROM statuses WHERE status_type = :status))";
     private static final String UPDATE_QUERY = "UPDATE orders SET user_id = :user_id, total_cost = :total_cost, status_type_id = " +
             "(SELECT id FROM statuses WHERE status_type = :status) WHERE id = :id";
@@ -39,7 +39,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue("status", String.valueOf(order.getStatus()));
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        namedParameterJdbcTemplate.update(INSERT_QUERY, params, keyHolder, new String[]{"id"});
+        namedParameterJdbcTemplate.update(CREATION_QUERY, params, keyHolder, new String[]{"id"});
         return Optional.ofNullable(keyHolder.getKey())
                 .map(Number::longValue)
                 .map(this::findById)
@@ -48,12 +48,12 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public OrderDto findById(Long id) {
-        return jdbcTemplate.queryForObject(SELECT_BY_ID_QUERY, this::mapRow, id);
+        return jdbcTemplate.queryForObject(FIND_BY_ID_QUERY, this::mapRow, id);
     }
 
     @Override
     public List<OrderDto> findAll() {
-        return jdbcTemplate.query(SELECT_ALL_QUERY, this::mapRow);
+        return jdbcTemplate.query(FIND_ALL_QUERY, this::mapRow);
     }
 
     @Override
