@@ -18,6 +18,6 @@ public class OrderCommand implements Command {
         long id = Long.parseLong(idRaw);
         OrderReadFullDto order = orderService.getById(id);
         req.setAttribute("order", order);
-        return "/jsp/order.jsp";
+        return "/jsp/order/order.jsp";
     }
 }

@@ -18,7 +18,7 @@ public class OrdersCommand implements Command {
     public String execute(HttpServletRequest req) {
         List<OrderReadFullDto> orders = orderService.getAllFull();
         req.setAttribute("orders", orders);
-        return "/jsp/orders.jsp";
+        return "/jsp/order/orders.jsp";
     }
 }
 
