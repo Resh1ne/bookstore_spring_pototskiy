@@ -105,7 +105,6 @@ public class DataMapperImpl implements DataMapper {
         dto.setBookPrice(entity.getBookPrice());
         dto.setBookId(entity.getBook().getId());
         dto.setBookQuantity(entity.getBookQuantity());
-        dto.setOrderId(entity.getOrderId());
         return dto;
     }
 
@@ -124,7 +123,6 @@ public class DataMapperImpl implements DataMapper {
         entity.setId(dto.getId());
         entity.setBookPrice(dto.getBookPrice());
         entity.setBookQuantity(dto.getBookQuantity());
-        entity.setOrderId(dto.getOrderId());
         return entity;
     }
 }
