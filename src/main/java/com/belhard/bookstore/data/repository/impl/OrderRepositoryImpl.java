@@ -34,6 +34,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         OrderDto createdDto = orderDao.create(orderDto);
         order.getItems().forEach(orderInfo -> {
             OrderInfoDto orderInfoDto = dataMapper.toDto(orderInfo);
+            orderInfoDto.setOrderId(createdDto.getId());
             orderInfoDao.create(orderInfoDto);
         });
 
@@ -62,6 +63,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .forEach(oldOrderInfo -> orderInfoDao.delete(oldOrderInfo.getId()));
         order.getItems().forEach(orderInfo -> {
             OrderInfoDto orderInfoDto = dataMapper.toDto(orderInfo);
+            orderInfoDto.setOrderId(createdDto.getId());
             orderInfoDao.create(orderInfoDto);
         });
 
@@ -70,7 +72,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public boolean delete(Long id) {
-        return userDao.delete(id);
+        return orderDao.delete(id);
     }
 
     private Order combineOrder(OrderDto orderDto) {
