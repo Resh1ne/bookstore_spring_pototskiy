@@ -5,9 +5,7 @@ import com.belhard.bookstore.data.entity.OrderInfo;
 import com.belhard.bookstore.data.entity.enums.Status;
 import com.belhard.bookstore.data.repository.OrderRepository;
 import com.belhard.bookstore.service.OrderService;
-import com.belhard.bookstore.service.dto.OrderCreateDto;
-import com.belhard.bookstore.service.dto.OrderReadFullDto;
-import com.belhard.bookstore.service.dto.OrderReadSimpleDto;
+import com.belhard.bookstore.service.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -22,35 +20,24 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     @Override
-    public OrderReadFullDto create(OrderCreateDto dto) {
-        log.debug("Creating order.");
-        Order order = toCreateEntity(dto);
-        Order createdOrder = orderRepository.create(order);
-        return toOrderReadFullDto(createdOrder);
+    public OrderDto create(OrderDto dto) {
+        log.debug("Creating order");
+        Order order = toOrderEntity(dto);
+        Order orderCreated = orderRepository.create(order);
+        return toOrderDto(orderCreated);
     }
 
-    private OrderReadFullDto toOrderReadFullDto(Order createdOrder) {
-        OrderReadFullDto dto = new OrderReadFullDto();
-        dto.setId(createdOrder.getId());
-        dto.setUser(createdOrder.getUser());
-        dto.setItems(createdOrder.getItems());
-        dto.setTotalCost(calculateTotalCost(createdOrder));
-//        dto.setStatus(Status.valueOf(createdOrder.getStatus().name()));
-        dto.setStatus(createdOrder.getStatus());
-        updateTotalCost(createdOrder.getId());
-        return dto;
+    private OrderDto toOrderDto(Order order) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(order.getId());
+        orderDto.setUser(order.getUser());
+        orderDto.setItems(order.getItems());
+        orderDto.setTotalCost(order.getTotalCost());
+        orderDto.setStatus(order.getStatus());
+        return orderDto;
     }
 
-    private OrderReadSimpleDto toOrderReadSimpleDto(Order createdOrder) {
-        OrderReadSimpleDto dto = new OrderReadSimpleDto();
-        dto.setUser(createdOrder.getUser());
-        dto.setTotalCost(calculateTotalCost(createdOrder));
-        dto.setStatus(Status.valueOf(createdOrder.getStatus().name()));
-        updateTotalCost(createdOrder.getId());
-        return dto;
-    }
-
-    private Order toCreateEntity(OrderCreateDto dto) {
+    private Order toOrderEntity(OrderDto dto) {
         Order entity = new Order();
         entity.setUser(dto.getUser());
         entity.setItems(dto.getItems());
@@ -60,56 +47,41 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderReadSimpleDto> getAll() {
-        log.debug("Getting all orders.");
-        return orderRepository
-                .findAll()
-                .stream()
-                .map(this::toOrderReadSimpleDto)
-                .toList();
-    }
-
-    @Override
-    public List<OrderReadFullDto> getAllFull() {
+    public List<OrderDto> getAll() {
         log.debug("Getting all orders with details.");
         return orderRepository
                 .findAll()
                 .stream()
-                .map(this::toOrderReadFullDto)
+                .map(this::toOrderDto)
                 .toList();
     }
 
     @Override
-    public OrderReadFullDto getById(long id) {
+    public OrderDto getById(long id) {
         log.debug("Getting order by ID: {}", id);
-        Order order = orderRepository.findById(id);
-        if (order == null) {
+        Order orderEntity = orderRepository.findById(id);
+        if (orderEntity == null) {
             throw new RuntimeException("No order with ID: " + id);
         }
-        return toOrderReadFullDto(order);
+        return toOrderDto(orderEntity);
     }
 
     @Override
-    public OrderReadFullDto update(OrderReadFullDto dto) {
+    public OrderDto update(OrderDto dto) {
         log.debug("Updating order.");
-        Order order = toUpdateEntity(dto);
-        Order updatedOrder = orderRepository.update(order);
-        return toOrderReadFullDto(updatedOrder);
-    }
-
-    private Order toUpdateEntity(OrderReadFullDto dto) {
-        Order entity = new Order();
-        entity.setId(dto.getId());
-        entity.setUser(dto.getUser());
-        entity.setItems(dto.getItems());
-        entity.setTotalCost(dto.getTotalCost());
-        entity.setStatus(Status.valueOf(dto.getStatus().name()));
-        return entity;
+        Order order = toOrderEntity(dto);
+        order.setId(dto.getId());
+        Order orderCreated = orderRepository.update(order);
+        return toOrderDto(orderCreated);
     }
 
     @Override
     public void delete(long id) {
         log.debug("Deleting order with ID: {}", id);
+        Order order = orderRepository.findById(id);
+        if (order == null) {
+            throw new RuntimeException("Order with id: " + id + " not found");
+        }
         orderRepository.delete(id);
     }
 

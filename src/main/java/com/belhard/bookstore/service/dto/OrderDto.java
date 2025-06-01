@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class OrderReadFullDto {
+public class OrderDto {
     private Long id;
     private User user;
     private BigDecimal totalCost;

@@ -2,7 +2,7 @@ package com.belhard.bookstore.controller.impl;
 
 import com.belhard.bookstore.controller.Command;
 import com.belhard.bookstore.service.OrderService;
-import com.belhard.bookstore.service.dto.OrderReadFullDto;
+import com.belhard.bookstore.service.dto.OrderDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,7 +16,7 @@ public class OrdersCommand implements Command {
 
     @Override
     public String execute(HttpServletRequest req) {
-        List<OrderReadFullDto> orders = orderService.getAllFull();
+        List<OrderDto> orders = orderService.getAll();
         req.setAttribute("orders", orders);
         return "/jsp/order/orders.jsp";
     }
