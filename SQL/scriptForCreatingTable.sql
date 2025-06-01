@@ -179,3 +179,21 @@ INSERT INTO order_items (order_id, book_id, quantity, price) VALUES
     (9, 17, 2, 16.50),
     (10, 19, 3, 14.00),
     (10, 9, 1, 20.00);
+
+-- 1. Для связи order_items -> orders (удаление позиций при удалении заказа)
+ALTER TABLE order_items
+DROP CONSTRAINT order_items_order_id_fkey,
+ADD CONSTRAINT order_items_order_id_fkey
+FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+
+-- 2. Для связи order_items -> books (удаление позиций при удалении книги)
+ALTER TABLE order_items
+DROP CONSTRAINT order_items_book_id_fkey,
+ADD CONSTRAINT order_items_book_id_fkey
+FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE;
+
+-- 3. Для связи orders -> users (удаление заказов и их позиций при удалении пользователя)
+ALTER TABLE orders
+DROP CONSTRAINT orders_user_id_fkey,
+ADD CONSTRAINT orders_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
