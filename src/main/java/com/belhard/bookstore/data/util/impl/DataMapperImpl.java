@@ -99,7 +99,16 @@ public class DataMapperImpl implements DataMapper {
     }
 
     @Override
-    public OrderInfoDto toDto(OrderInfo entity) {
+    public Order toEntity(OrderDto dto) { //without user, items
+        Order entity = new Order();
+        entity.setId(dto.getId());
+        entity.setTotalCost(dto.getTotalCost());
+        entity.setStatus(Status.valueOf(dto.getStatus().name()));
+        return entity;
+    }
+
+    @Override
+    public OrderInfoDto toDto(OrderInfo entity) { //without orderId
         OrderInfoDto dto = new OrderInfoDto();
         dto.setId(entity.getId());
         dto.setBookPrice(entity.getBookPrice());
@@ -109,16 +118,7 @@ public class DataMapperImpl implements DataMapper {
     }
 
     @Override
-    public Order toEntity(OrderDto dto) {
-        Order entity = new Order();
-        entity.setId(dto.getId());
-        entity.setTotalCost(dto.getTotalCost());
-        entity.setStatus(Status.valueOf(dto.getStatus().name()));
-        return entity;
-    }
-
-    @Override
-    public OrderInfo toEntity(OrderInfoDto dto) {
+    public OrderInfo toEntity(OrderInfoDto dto) { //without book
         OrderInfo entity = new OrderInfo();
         entity.setId(dto.getId());
         entity.setBookPrice(dto.getBookPrice());
