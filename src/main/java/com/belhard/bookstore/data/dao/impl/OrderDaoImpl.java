@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,17 +34,14 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public OrderDto create(OrderDto order) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("user_id", order.getUserId())
                 .addValue("total_cost", order.getTotalCost())
                 .addValue("status", String.valueOf(order.getStatus()));
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(CREATION_QUERY, params, keyHolder, new String[]{"id"});
-        return Optional.ofNullable(keyHolder.getKey())
-                .map(Number::longValue)
-                .map(this::findById)
-                .orElseThrow(() -> new RuntimeException("Failed to retrieve the generated key"));
+        return findById(Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     @Override
@@ -58,12 +56,15 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public OrderDto update(OrderDto order) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("user_id", order.getUserId())
                 .addValue("total_cost", order.getTotalCost())
                 .addValue("status", String.valueOf(order.getStatus()))
                 .addValue("id", order.getId());
-        namedParameterJdbcTemplate.update(UPDATE_QUERY, params);
+        int rowsUpdated = namedParameterJdbcTemplate.update(UPDATE_QUERY, params);
+        if (rowsUpdated == 0) {
+            throw new RuntimeException("Can't update order with id: " + order.getId());
+        }
         return findById(order.getId());
     }
 

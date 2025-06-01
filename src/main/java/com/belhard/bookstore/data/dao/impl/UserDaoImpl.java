@@ -12,20 +12,17 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
 public class UserDaoImpl implements UserDao {
     private static final String CREATION_QUERY = "INSERT INTO users " +
             "(first_name, last_name, role_id, email, \"password\", age) " +
-            "VALUES (?, ?, (SELECT id FROM roles r WHERE r.role = ?), ?, ?, ?)";
+            "VALUES (:first_name, :last_name, (SELECT id FROM roles r WHERE r.role = :role), :email, :password, :age)";
     private static final String FIND_ALL_QUERY = "SELECT u.id, u.first_name, u.last_name, r.role, u.email, u.password, u.age " +
             "FROM users u " +
             "JOIN roles r ON u.role_id = r.id ";
@@ -57,35 +54,18 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public UserDto create(UserDto user) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("first_name", user.getFirstName())
+                .addValue("last_name", user.getLastName())
+                .addValue("role", String.valueOf(user.getRole()))
+                .addValue("email", user.getEmail())
+                .addValue("password", user.getPassword())
+                .addValue("age", user.getAge());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(CREATION_QUERY, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getRole().toString());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getPassword());
-            setNullInt(6, user.getAge(), statement);
-            return statement;
-        }, keyHolder);
-        List<Map<String, Object>> keys = keyHolder.getKeyList();
-        Long id = null;
-        for (Map<String, Object> key : keys) {
-            id = (Long) key.get("id");
-        }
-        if (id == null) {
-            throw new RuntimeException("Failed to create user");
-        }
-        return findById(id);
+        namedParameterJdbcTemplate.update(CREATION_QUERY, params, keyHolder, new String[]{"id"});
+        return findById(Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
-    private void setNullInt(int index, Integer value, PreparedStatement statement) throws SQLException {
-        if (value == null) {
-            statement.setNull(index, Types.INTEGER);
-        } else {
-            statement.setInt(index, value);
-        }
-    }
 
     @Override
     public UserDto findById(Long id) {

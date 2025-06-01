@@ -13,14 +13,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
@@ -29,7 +25,8 @@ public class BookDaoImpl implements BookDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private static final String CREATION_QUERY = "INSERT INTO books " +
             "(author, isbn, title, pages, publication_year, genre_id, language_id, price) " +
-            "VALUES (?, ?, ?, ?, ?, (SELECT id FROM genres g WHERE g.genre = ?), (SELECT id FROM languages l WHERE l.language = ?), ?)";
+            "VALUES (:author, :isbn, :title, :pages, :publication_year, " +
+            "(SELECT id FROM genres g WHERE g.genre = :genre), (SELECT id FROM languages l WHERE l.language = :language), :price)";
     private static final String FIND_ALL_QUERY = "SELECT b.id, b.author, b.isbn, b.title, b.pages, b.publication_year, g.genre, l.language, b.price " +
             "FROM books b " +
             "JOIN genres g ON b.genre_id = g.id " +
@@ -65,44 +62,18 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public BookDto create(BookDto book) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("author", book.getAuthor())
+                .addValue("isbn", book.getIsbn())
+                .addValue("title", book.getTitle())
+                .addValue("pages", book.getPages())
+                .addValue("publication_year", book.getPublicationYear())
+                .addValue("genre", String.valueOf(book.getGenre()))
+                .addValue("language", String.valueOf(book.getLanguage()))
+                .addValue("price", book.getPrice());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(CREATION_QUERY, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, book.getAuthor());
-            statement.setString(2, book.getIsbn());
-            statement.setString(3, book.getTitle());
-            setNullInt(4, book.getPages(), statement);
-            setNullInt(5, book.getPublicationYear(), statement);
-            statement.setString(6, book.getGenre().toString());
-            statement.setString(7, book.getLanguage().toString());
-            setNullBigDecimal(8, book.getPrice(), statement);
-            return statement;
-        }, keyHolder);
-        List<Map<String, Object>> keys = keyHolder.getKeyList();
-        Long id = null;
-        for (Map<String, Object> key : keys) {
-            id = (Long) key.get("id");
-        }
-        if (id == null) {
-            throw new RuntimeException("Failed to create user");
-        }
-        return findById(id);
-    }
-
-    private void setNullInt(int index, Integer value, PreparedStatement statement) throws SQLException {
-        if (value == null) {
-            statement.setNull(index, Types.INTEGER);
-        } else {
-            statement.setInt(index, value);
-        }
-    }
-
-    private void setNullBigDecimal(int index, BigDecimal value, PreparedStatement statement) throws SQLException {
-        if (value == null) {
-            statement.setNull(index, Types.DOUBLE);
-        } else {
-            statement.setBigDecimal(index, value);
-        }
+        namedParameterJdbcTemplate.update(CREATION_QUERY, params, keyHolder, new String[]{"id"});
+        return findById(Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     @Override
