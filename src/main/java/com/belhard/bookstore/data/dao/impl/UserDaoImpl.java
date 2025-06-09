@@ -2,7 +2,7 @@ package com.belhard.bookstore.data.dao.impl;
 
 import com.belhard.bookstore.data.dao.UserDao;
 import com.belhard.bookstore.data.dto.UserDto;
-import com.belhard.bookstore.data.entity.User;
+import com.belhard.bookstore.data.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -78,7 +78,7 @@ public class UserDaoImpl implements UserDao {
         user.setEmail(resultSet.getString("email"));
         user.setId(resultSet.getLong("id"));
         user.setPassword(resultSet.getString("password"));
-        user.setRole(User.Role.valueOf(resultSet.getString("role")));
+        user.setRole(Role.valueOf(resultSet.getString("role")));
         user.setFirstName(resultSet.getString("first_name"));
         user.setLastName(resultSet.getString("last_name"));
         return user;

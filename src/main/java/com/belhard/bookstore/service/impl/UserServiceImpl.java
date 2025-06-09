@@ -1,6 +1,7 @@
 package com.belhard.bookstore.service.impl;
 
 import com.belhard.bookstore.data.entity.User;
+import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.data.repository.UserRepository;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private User validateForCreate(User user) {
         user.setAge(null);
-        user.setRole(User.Role.CUSTOMER);
+        user.setRole(Role.CUSTOMER);
         user.setLastName(null);
         user.setFirstName(null);
         return user;
