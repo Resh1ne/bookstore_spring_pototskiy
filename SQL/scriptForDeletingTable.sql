@@ -1,0 +1,8 @@
+DROP TABLE books CASCADE;
+DROP TABLE languages;
+DROP TABLE genres;
+DROP TABLE users CASCADE;
+DROP TABLE roles;
+DROP TABLE orders CASCADE;
+DROP TABLE order_items CASCADE;
+DROP TABLE statuses;

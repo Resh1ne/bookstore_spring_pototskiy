@@ -2,8 +2,8 @@ package com.belhard.bookstore.controller.impl;
 
 import com.belhard.bookstore.controller.Command;
 import com.belhard.bookstore.controller.FrontController;
+import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
-import com.belhard.bookstore.data.entity.enums.LanguagesOfTheBook;
 import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class EditBookCommand implements Command {
         book.setPages(pages);
         book.setPublicationYear(publicationYear);
         book.setGenre(GenresOfTheBook.valueOf(genre));
-        book.setLanguage(LanguagesOfTheBook.valueOf(language));
+        book.setLanguage(Book.Language.valueOf(language));
         book.setPrice(price);
         return book;
     }

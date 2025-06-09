@@ -1,33 +1,39 @@
 package com.belhard.bookstore.service.impl;
 
-import com.belhard.bookstore.data.dao.BookDao;
 import com.belhard.bookstore.data.entity.Book;
+import com.belhard.bookstore.data.repository.BookRepository;
 import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class BookServiceImpl implements BookService {
-    private final BookDao bookDao;
-    private static final Logger log = LogManager.getLogger(BookServiceImpl.class);
-
+    private final BookRepository bookRepository;
 
     @Override
     public BookDto create(BookDto dto) {
         log.debug("The service method is called");
         Book book = toBookEntity(dto);
-        Book bookCreated = bookDao.create(book);
+        book = validateForCreate(book);
+        Book bookCreated = bookRepository.create(book);
         return toBookDto(bookCreated);
     }
 
+    private Book validateForCreate(Book book) {
+        book.setAuthor(null);
+        book.setPages(null);
+        book.setPrice(null);
+        book.setPublicationYear(null);
+        return book;
+    }
+
     private Book toBookEntity(BookDto dto) {
-        log.debug("The service method is called");
         Book bookEntity = new Book();
         bookEntity.setAuthor(dto.getAuthor());
         bookEntity.setGenre(dto.getGenre());
@@ -43,7 +49,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookDto> getAll() {
         log.debug("The service method is called");
-        return bookDao.findAll()
+        return bookRepository.findAll()
                 .stream()
                 .map(this::toBookDto)
                 .toList();
@@ -52,7 +58,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto getById(long id) {
         log.debug("The service method is called");
-        Book bookEntity = bookDao.findById(id);
+        Book bookEntity = bookRepository.findById(id);
         if (bookEntity == null) {
             throw new RuntimeException("No book with id: " + id);
         }
@@ -64,18 +70,18 @@ public class BookServiceImpl implements BookService {
         log.debug("The service method is called");
         Book book = toBookEntity(dto);
         book.setId(dto.getId());
-        Book bookCreated = bookDao.update(book);
+        Book bookCreated = bookRepository.update(book);
         return toBookDto(bookCreated);
     }
 
     @Override
     public void delete(long id) {
         log.debug("The service method is called");
-        Book book = bookDao.findById(id);
+        Book book = bookRepository.findById(id);
         if (book == null) {
             throw new RuntimeException("Book with id: " + id + " not found");
         }
-        bookDao.delete(id);
+        bookRepository.delete(id);
     }
 
     private BookDto toBookDto(Book book) {

@@ -1,4 +1,4 @@
-package com.belhard.bookstore.service.dto;
+package com.belhard.bookstore.data.dto;
 
 import com.belhard.bookstore.data.entity.User;
 import lombok.Data;

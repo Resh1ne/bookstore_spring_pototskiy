@@ -1,39 +1,39 @@
 package com.belhard.bookstore.service.impl;
 
-import com.belhard.bookstore.data.dao.UserDao;
 import com.belhard.bookstore.data.entity.User;
-import com.belhard.bookstore.data.entity.enums.Role;
+import com.belhard.bookstore.data.repository.UserRepository;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao;
-    private static final Logger log = LogManager.getLogger(UserServiceImpl.class);
-
+    private final UserRepository userRepository;
 
     @Override
     public UserDto create(UserDto dto) {
         log.debug("The service method is called");
         User user = toUserEntity(dto);
+        user = validateForCreate(user);
+        User userCreated = userRepository.create(user);
+        return toUserDto(userCreated);
+    }
+
+    private User validateForCreate(User user) {
         user.setAge(null);
-        user.setRole(Role.CUSTOMER);
+        user.setRole(User.Role.CUSTOMER);
         user.setLastName(null);
         user.setFirstName(null);
-        user.setId(null);
-        User bookCreated = userDao.create(user);
-        return toUserDto(bookCreated);
+        return user;
     }
 
     private User toUserEntity(UserDto dto) {
-        log.debug("The service method is called");
         User userEntity = new User();
         userEntity.setRole(dto.getRole());
         userEntity.setPassword(dto.getPassword());
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAll() {
         log.debug("The service method is called");
-        return userDao.findAll()
+        return userRepository.findAll()
                 .stream()
                 .map(this::toUserDto)
                 .toList();
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getById(long id) {
         log.debug("The service method is called");
-        User userEntity = userDao.findById(id);
+        User userEntity = userRepository.findById(id);
         if (userEntity == null) {
             throw new RuntimeException("No book with id: " + id);
         }
@@ -68,18 +68,18 @@ public class UserServiceImpl implements UserService {
         log.debug("The service method is called");
         User user = toUserEntity(dto);
         user.setId(dto.getId());
-        User userCreated = userDao.update(user);
+        User userCreated = userRepository.update(user);
         return toUserDto(userCreated);
     }
 
     @Override
     public void delete(long id) {
         log.debug("The service method is called");
-        User user = userDao.findById(id);
+        User user = userRepository.findById(id);
         if (user == null) {
             throw new RuntimeException("Book with id: " + id + " not found");
         }
-        userDao.delete(id);
+        userRepository.delete(id);
     }
 
     private UserDto toUserDto(User user) {

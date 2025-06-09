@@ -24,7 +24,7 @@ public class AppListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         log.info("Context destroy event");
-        if(context != null) {
+        if (context != null) {
             context.close();
         }
     }
