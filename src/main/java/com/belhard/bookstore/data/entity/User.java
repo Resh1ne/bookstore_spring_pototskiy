@@ -1,5 +1,6 @@
 package com.belhard.bookstore.data.entity;
 
+import com.belhard.bookstore.data.entity.enums.Role;
 import lombok.Data;
 
 @Data
@@ -11,9 +12,4 @@ public class User {
     private String email;
     private String password;
     private Integer age;
-
-    @SuppressWarnings("unused")
-    public enum Role {
-        ADMIN, MANAGER, CUSTOMER
-    }
 }
