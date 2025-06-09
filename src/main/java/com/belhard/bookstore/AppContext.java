@@ -1,11 +1,12 @@
 package com.belhard.bookstore;
 
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 @Configuration
 @ComponentScan
@@ -13,5 +14,10 @@ public class AppContext {
     @Bean
     public EntityManagerFactory entityManagerFactory() {
         return Persistence.createEntityManagerFactory("psql");
+    }
+
+    @Bean
+    public TransactionManager transactionManager(EntityManagerFactory factory) {
+        return new JpaTransactionManager(factory);
     }
 }
