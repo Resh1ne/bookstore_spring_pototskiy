@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Error</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <jsp:include page="../navbar.jsp" />
