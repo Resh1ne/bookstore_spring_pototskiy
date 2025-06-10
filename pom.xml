@@ -15,7 +15,7 @@
         <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
         <spring.version>6.1.2</spring.version>
         <jakarta.annotations.version>2.1.1</jakarta.annotations.version>
-        <hibernate.version>7.0.0.Final</hibernate.version>
+        <hibernate.version>6.4.2.Final</hibernate.version>
     </properties>
 
     <dependencies>
