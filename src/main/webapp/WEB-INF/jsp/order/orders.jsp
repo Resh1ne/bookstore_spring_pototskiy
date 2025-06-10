@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
     <title>Orders List</title>
 </head>
 <body>
@@ -26,7 +26,7 @@
                     <td>${order.totalCost}</td>
                     <td>${order.status}</td>
 
-                    <td><a href="<c:url value='/controller?command=order&id=${order.id}'/>">Details</a></td>
+                    <td><a href="<c:url value='orders/${order.id}'/>">Details</a></td>
                 </tr>
             </c:forEach>
         </tbody>
