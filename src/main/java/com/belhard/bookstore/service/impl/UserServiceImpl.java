@@ -8,6 +8,7 @@ import com.belhard.bookstore.service.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,10 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto dto) {
-        log.debug("The service method is called");
         User user = toUserEntity(dto);
-        user = validateForCreate(user);
-        User userCreated = userRepository.create(user);
+        User userCreated = userRepository.save(validateForCreate(user));
+        log.info("Created new user with id: {}", userCreated.getId());
         return toUserDto(userCreated);
     }
 
@@ -46,41 +46,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public List<UserDto> getAll() {
-        log.debug("The service method is called");
-        return userRepository.findAll()
+        return userRepository
+                .findAll()
                 .stream()
                 .map(this::toUserDto)
                 .toList();
     }
 
     @Override
+    @Transactional
     public UserDto getById(long id) {
-        log.debug("The service method is called");
-        User userEntity = userRepository.findById(id);
-        if (userEntity == null) {
-            throw new RuntimeException("No book with id: " + id);
-        }
-        return toUserDto(userEntity);
+        return userRepository
+                .findById(id)
+                .map(this::toUserDto)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     @Override
     public UserDto update(UserDto dto) {
-        log.debug("The service method is called");
         User user = toUserEntity(dto);
         user.setId(dto.getId());
-        User userCreated = userRepository.update(user);
+        User userCreated = userRepository.save(user);
+        log.info("Updated user with id: {}", userCreated.getId());
         return toUserDto(userCreated);
     }
 
     @Override
     public void delete(long id) {
-        log.debug("The service method is called");
-        User user = userRepository.findById(id);
-        if (user == null) {
-            throw new RuntimeException("Book with id: " + id + " not found");
+        if (!userRepository.delete(id)) {
+            throw new RuntimeException("User with id: " + id + " not found");
         }
-        userRepository.delete(id);
+        log.info("Deleted user with id: {}", id);
     }
 
     private UserDto toUserDto(User user) {
