@@ -6,6 +6,7 @@ import com.belhard.bookstore.data.entity.enums.Status;
 import com.belhard.bookstore.data.repository.OrderRepository;
 import com.belhard.bookstore.service.OrderService;
 import com.belhard.bookstore.service.dto.OrderDto;
+import com.belhard.bookstore.service.dto.OrderSimpleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
@@ -40,6 +41,14 @@ public class OrderServiceImpl implements OrderService {
         return orderDto;
     }
 
+    private OrderSimpleDto toOrderSimpleDto(Order order) {
+        OrderSimpleDto orderDto = new OrderSimpleDto();
+        orderDto.setId(order.getId());
+        orderDto.setTotalCost(order.getTotalCost());
+        orderDto.setStatus(order.getStatus());
+        return orderDto;
+    }
+
     private Order toOrderEntity(OrderDto dto) {
         Order entity = new Order();
         entity.setUser(dto.getUser());
@@ -50,12 +59,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getAll() {
+    public List<OrderSimpleDto> getAll() {
         log.debug("Getting all orders with details.");
         return orderRepository
                 .findAll()
                 .stream()
-                .map(this::toOrderDto)
+                .map(this::toOrderSimpleDto)
                 .toList();
     }
 
