@@ -2,13 +2,12 @@
 <html>
   <head>
     <title>Edit</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <jsp:include page="../navbar.jsp" />
     <h1>Register new book</h1>
-    <form method="post" action="controller">
-      <input name="command" type="hidden" value="edit_book" />
+    <form method="post" action="/books/edit/${book.id}">
       <input name="id" type="hidden" value="${book.id}" />
       <label
         >Title:<input name="title" type="text" required value="${book.title}"

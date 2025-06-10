@@ -2,13 +2,12 @@
 <html>
   <head>
     <title>Create User</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <jsp:include page="../navbar.jsp" />
     <h1>Register new book</h1>
-    <form method="post" action="controller">
-      <input name="command" type="hidden" value="create_book" />
+    <form method="post" action="/books/create">
       <label>Title:<input name="title" type="text" required /></label>
       <br />
       <label>Isbn:<input name="isbn" type="text" required /></label>
