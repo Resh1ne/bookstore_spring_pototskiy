@@ -2,7 +2,6 @@ package com.belhard.bookstore.controller.impl;
 
 import com.belhard.bookstore.controller.Command;
 import com.belhard.bookstore.controller.FrontController;
-import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
