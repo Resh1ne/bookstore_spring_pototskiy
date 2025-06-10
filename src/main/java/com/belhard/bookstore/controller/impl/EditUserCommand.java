@@ -2,7 +2,7 @@ package com.belhard.bookstore.controller.impl;
 
 import com.belhard.bookstore.controller.Command;
 import com.belhard.bookstore.controller.FrontController;
-import com.belhard.bookstore.data.entity.User;
+import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class EditUserCommand implements Command {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setAge(age);
-        user.setRole(User.Role.valueOf(role));
+        user.setRole(Role.valueOf(role));
         return user;
     }
 }

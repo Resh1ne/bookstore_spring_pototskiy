@@ -1,62 +1,68 @@
 package com.belhard.bookstore.data.repository.impl;
 
-import com.belhard.bookstore.data.dao.BookDao;
-import com.belhard.bookstore.data.dto.BookDto;
 import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.repository.BookRepository;
-import com.belhard.bookstore.data.util.DataMapper;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
+@Transactional
 public class BookRepositoryImpl implements BookRepository {
-    private final DataMapper dataMapper;
-    private final BookDao bookDao;
+    private static final String GET_ALL = "from Book";
+    private static final String FIND_BY_AUTHOR = "SELECT b FROM Book b WHERE b.author = :author";
+    private static final String FIND_BY_ISBN = "SELECT b FROM Book b WHERE b.isbn = :isbn";
+    @PersistenceContext
+    private EntityManager manager;
 
     @Override
-    public Book create(Book book) {
-        BookDto bookDto = dataMapper.toDto(book);
-        BookDto created = bookDao.create(bookDto);
-        return dataMapper.toEntity(created);
-    }
-
-    @Override
-    public Book findById(Long id) {
-        return dataMapper.toEntity(bookDao.findById(id));
-    }
-
-    @Override
-    public List<Book> findAll() {
-        return dataMapper.toBooksEntity(bookDao.findAll());
-    }
-
-    @Override
-    public Book update(Book book) {
-        BookDto bookDto = dataMapper.toDto(book);
-        BookDto updated = bookDao.update(bookDto);
-        return dataMapper.toEntity(updated);
-    }
-
-    @Override
-    public boolean delete(Long id) {
-        return bookDao.delete(id);
-    }
-
-    @Override
-    public Book findByIsbn(String isbn) {
-        return dataMapper.toEntity(bookDao.findByIsbn(isbn));
+    public Optional<Book> findByIsbn(String isbn) {
+        return manager
+                .createQuery(FIND_BY_ISBN, Book.class)
+                .setParameter("isbn", isbn)
+                .getResultStream()
+                .findFirst();
     }
 
     @Override
     public List<Book> findByAuthor(String author) {
-        return dataMapper.toBooksEntity(bookDao.findByAuthor(author));
+        return manager
+                .createQuery(FIND_BY_AUTHOR, Book.class)
+                .setParameter("author", author)
+                .getResultList();
     }
 
     @Override
-    public long countAll() {
-        return bookDao.countAll();
+    public Optional<Book> findById(Long key) {
+        return Optional.ofNullable(manager.find(Book.class, key));
+    }
+
+    @Override
+    public List<Book> findAll() {
+        return manager.createQuery(GET_ALL, Book.class).getResultList();
+    }
+
+    @Override
+    public Book save(Book entity) {
+        if (entity.getId() == null) {
+            manager.persist(entity);
+            return entity;
+        } else {
+            return manager.merge(entity);
+        }
+    }
+
+    @Override
+    public boolean delete(Long key) {
+        Book book = manager.find(Book.class, key);
+        if (book == null) {
+            return false;
+        }
+        manager.remove(book);
+        return true;
     }
 }

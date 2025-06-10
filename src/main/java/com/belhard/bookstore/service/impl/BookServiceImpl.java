@@ -7,6 +7,7 @@ import com.belhard.bookstore.service.dto.BookDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,10 +19,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto create(BookDto dto) {
-        log.debug("The service method is called");
         Book book = toBookEntity(dto);
-        book = validateForCreate(book);
-        Book bookCreated = bookRepository.create(book);
+        Book bookCreated = bookRepository.save(validateForCreate(book));
+        log.info("Created new book with id: {}", bookCreated.getId());
         return toBookDto(bookCreated);
     }
 
@@ -47,41 +47,39 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public List<BookDto> getAll() {
-        log.debug("The service method is called");
-        return bookRepository.findAll()
+        return bookRepository
+                .findAll()
                 .stream()
                 .map(this::toBookDto)
                 .toList();
     }
 
     @Override
+    @Transactional
     public BookDto getById(long id) {
-        log.debug("The service method is called");
-        Book bookEntity = bookRepository.findById(id);
-        if (bookEntity == null) {
-            throw new RuntimeException("No book with id: " + id);
-        }
-        return toBookDto(bookEntity);
+        return bookRepository
+                .findById(id)
+                .map(this::toBookDto)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
     }
 
     @Override
     public BookDto update(BookDto dto) {
-        log.debug("The service method is called");
         Book book = toBookEntity(dto);
         book.setId(dto.getId());
-        Book bookCreated = bookRepository.update(book);
+        Book bookCreated = bookRepository.save(book);
+        log.info("Updated book with id: {}", bookCreated.getId());
         return toBookDto(bookCreated);
     }
 
     @Override
     public void delete(long id) {
-        log.debug("The service method is called");
-        Book book = bookRepository.findById(id);
-        if (book == null) {
+        if (!bookRepository.delete(id)) {
             throw new RuntimeException("Book with id: " + id + " not found");
         }
-        bookRepository.delete(id);
+        log.info("Deleted book with id: {}", id);
     }
 
     private BookDto toBookDto(Book book) {

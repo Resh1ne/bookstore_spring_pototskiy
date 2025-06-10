@@ -33,7 +33,7 @@
         >Last name:<input name="lastName" type="text" value="${user.lastName}"
       /></label>
       <br />
-      <label>Age:<input name="age" type="number" value="${user.age}" /></label>
+      <label>Age:<input name="age" type="number" required value="${user.age}" /></label>
       <br />
       <label
         >Customer:<input name="role" type="radio" value="CUSTOMER"

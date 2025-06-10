@@ -8,10 +8,13 @@ import com.belhard.bookstore.service.OrderService;
 import com.belhard.bookstore.service.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -21,9 +24,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto create(OrderDto dto) {
-        log.debug("Creating order");
         Order order = toOrderEntity(dto);
-        Order orderCreated = orderRepository.create(order);
+        Order orderCreated = orderRepository.save(order);
+        log.info("Created new order with id: {}", orderCreated.getId());
         return toOrderDto(orderCreated);
     }
 
@@ -57,50 +60,48 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDto getById(long id) {
-        log.debug("Getting order by ID: {}", id);
-        Order orderEntity = orderRepository.findById(id);
-        if (orderEntity == null) {
-            throw new RuntimeException("No order with ID: " + id);
-        }
-        return toOrderDto(orderEntity);
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+        Hibernate.initialize(order.getItems());
+        Hibernate.initialize(order.getUser());
+        return toOrderDto(order);
     }
 
     @Override
     public OrderDto update(OrderDto dto) {
-        log.debug("Updating order.");
         Order order = toOrderEntity(dto);
         order.setId(dto.getId());
-        Order orderCreated = orderRepository.update(order);
+        Order orderCreated = orderRepository.save(order);
+        log.info("Updated order with id: {}", orderCreated.getId());
         return toOrderDto(orderCreated);
     }
 
     @Override
     public void delete(long id) {
-        log.debug("Deleting order with ID: {}", id);
-        Order order = orderRepository.findById(id);
-        if (order == null) {
+        if (!orderRepository.delete(id)) {
             throw new RuntimeException("Order with id: " + id + " not found");
         }
-        orderRepository.delete(id);
+        log.info("Deleted order with id: {}", id);
     }
 
     public BigDecimal calculateTotalCost(Order order) {
         BigDecimal totalCost = BigDecimal.ZERO;
 
         for (OrderInfo orderInfo : order.getItems()) {
-            BigDecimal itemCost = orderInfo.getBookPrice().multiply(BigDecimal.valueOf(orderInfo.getBookQuantity()));
+            BigDecimal itemCost = orderInfo.getPrice().multiply(BigDecimal.valueOf(orderInfo.getQuantity()));
             totalCost = totalCost.add(itemCost);
         }
         return totalCost;
     }
 
     public void updateTotalCost(Long orderId) {
-        Order order = orderRepository.findById(orderId);
-        if (order != null) {
-            BigDecimal totalCost = calculateTotalCost(order);
-            order.setTotalCost(totalCost);
-            orderRepository.update(order);
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            BigDecimal totalCost = calculateTotalCost(order.get());
+            order.get().setTotalCost(totalCost);
+            orderRepository.save(order.get());
         }
     }
 }

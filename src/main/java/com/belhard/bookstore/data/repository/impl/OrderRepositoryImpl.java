@@ -1,93 +1,59 @@
 package com.belhard.bookstore.data.repository.impl;
 
-import com.belhard.bookstore.data.dao.BookDao;
-import com.belhard.bookstore.data.dao.OrderDao;
-import com.belhard.bookstore.data.dao.OrderInfoDao;
-import com.belhard.bookstore.data.dao.UserDao;
-import com.belhard.bookstore.data.dto.OrderDto;
-import com.belhard.bookstore.data.dto.OrderInfoDto;
-import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.entity.Order;
-import com.belhard.bookstore.data.entity.OrderInfo;
-import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.repository.OrderRepository;
-import com.belhard.bookstore.data.util.DataMapper;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
+@Transactional
 public class OrderRepositoryImpl implements OrderRepository {
-    private final OrderDao orderDao;
-    private final OrderInfoDao orderInfoDao;
-    private final UserDao userDao;
-    private final BookDao bookDao;
-    private final DataMapper dataMapper;
+    private static final String GET_ALL = "from Order";
+    private static final String FIND_BY_USER_ID = "SELECT o FROM Order o WHERE o.user.id = :userId";
+    @PersistenceContext
+    private EntityManager manager;
 
     @Override
-    public Order create(Order order) {
-        OrderDto orderDto = dataMapper.toDto(order);
-        OrderDto createdDto = orderDao.create(orderDto);
-        order.getItems().forEach(orderInfo -> {
-            OrderInfoDto orderInfoDto = dataMapper.toDto(orderInfo);
-            orderInfoDto.setOrderId(createdDto.getId());
-            orderInfoDao.create(orderInfoDto);
-        });
-
-        return combineOrder(createdDto);
+    public List<Order> findByUserId(Long userId) {
+        return manager
+                .createQuery(FIND_BY_USER_ID, Order.class)
+                .setParameter("userId", userId)
+                .getResultList();
     }
 
     @Override
-    public Order findById(Long id) {
-        OrderDto orderDto = orderDao.findById(id);
-        return combineOrder(orderDto);
+    public Optional<Order> findById(Long key) {
+        return Optional.ofNullable(manager.find(Order.class, key));
     }
 
     @Override
     public List<Order> findAll() {
-        return orderDao.findAll()
-                .stream()
-                .map(this::combineOrder)
-                .collect(Collectors.toList());
+        return manager.createQuery(GET_ALL, Order.class).getResultList();
     }
 
     @Override
-    public Order update(Order order) {
-        OrderDto orderDto = dataMapper.toDto(order);
-        OrderDto createdDto = orderDao.update(orderDto);
-        orderInfoDao.findByOrderId(order.getId())
-                .forEach(oldOrderInfo -> orderInfoDao.delete(oldOrderInfo.getId()));
-        order.getItems().forEach(orderInfo -> {
-            OrderInfoDto orderInfoDto = dataMapper.toDto(orderInfo);
-            orderInfoDto.setOrderId(createdDto.getId());
-            orderInfoDao.create(orderInfoDto);
-        });
-
-        return combineOrder(createdDto);
+    public Order save(Order entity) {
+        if (entity.getId() == null) {
+            manager.persist(entity);
+            return entity;
+        } else {
+            return manager.merge(entity);
+        }
     }
 
     @Override
-    public boolean delete(Long id) {
-        return orderDao.delete(id);
-    }
-
-    private Order combineOrder(OrderDto orderDto) {
-        Order order = dataMapper.toEntity(orderDto);
-        User user = dataMapper.toEntity(userDao.findById(orderDto.getUserId()));
-        order.setUser(user);
-        List<OrderInfoDto> detailsDto = orderInfoDao.findByOrderId(orderDto.getId());
-        List<OrderInfo> details = new ArrayList<>();
-        detailsDto.forEach(dto -> {
-            OrderInfo entity = dataMapper.toEntity(dto);
-            Book book = dataMapper.toEntity(bookDao.findById(dto.getBookId()));
-            entity.setBook(book);
-            details.add(entity);
-        });
-        order.setItems(details);
-        return order;
+    public boolean delete(Long key) {
+        Order order = manager.find(Order.class, key);
+        if (order == null) {
+            return false;
+        }
+        manager.remove(order);
+        return true;
     }
 }
+

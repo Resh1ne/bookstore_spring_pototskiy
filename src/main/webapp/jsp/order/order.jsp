@@ -15,9 +15,9 @@
       <c:forEach var="item" items="${order.items}">
         <li>
           ${item.book.title} -
-          Quantity: ${item.bookQuantity},
-          Price: ${item.bookPrice},
-          Total: ${item.bookQuantity * item.bookPrice}
+          Quantity: ${item.quantity},
+          Price: ${item.price},
+          Total: ${item.quantity * item.price}
         </li>
       </c:forEach>
     </ul>

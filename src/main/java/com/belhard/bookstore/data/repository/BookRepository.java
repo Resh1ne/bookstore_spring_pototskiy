@@ -3,23 +3,13 @@ package com.belhard.bookstore.data.repository;
 import com.belhard.bookstore.data.entity.Book;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface BookRepository {
-    Book create(Book book);
-
-    Book findById(Long id);
-
-    List<Book> findAll();
-
-    Book update(Book book);
-
-    boolean delete(Long id);
+public interface BookRepository extends CrudRepository<Book, Long> {
 
     @SuppressWarnings("unused")
-    Book findByIsbn(String isbn);
+    Optional<Book> findByIsbn(String isbn);
 
     @SuppressWarnings("unused")
     List<Book> findByAuthor(String author);
-
-    long countAll();
 }

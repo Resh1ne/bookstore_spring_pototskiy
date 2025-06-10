@@ -4,6 +4,7 @@ import com.belhard.bookstore.controller.Command;
 import com.belhard.bookstore.controller.FrontController;
 import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.entity.enums.GenresOfTheBook;
+import com.belhard.bookstore.data.entity.enums.Language;
 import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class CreateBookCommand implements Command {
         BookDto book = new BookDto();
         book.setTitle(title);
         book.setIsbn(isbn);
-        book.setLanguage(Book.Language.valueOf(language));
+        book.setLanguage(Language.valueOf(language));
         book.setGenre(GenresOfTheBook.valueOf(genre));
         return book;
     }
