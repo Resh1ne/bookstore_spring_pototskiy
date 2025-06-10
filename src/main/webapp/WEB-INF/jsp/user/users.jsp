@@ -4,7 +4,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
   <head>
     <title>Users</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <jsp:include page="../navbar.jsp" />
@@ -21,10 +21,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           <td>${counter.count}</td>
           <td>${user.id}</td>
           <td>
-            <a href="controller?command=user&id=${user.id}">${user.email}</a>
+            <a href="users/${user.id}">${user.email}</a>
           </td>
           <td>
-            <a href="controller?command=edit_user_form&id=${user.id}">Edit</a>
+            <a href="users/edit/${user.id}">Edit</a>
           </td>
         </tr>
       </c:forEach>

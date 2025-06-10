@@ -2,14 +2,13 @@
 <html>
   <head>
     <title>Edit</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <jsp:include page="../navbar.jsp" />
     <h1>Register new user</h1>
-    <form method="post" action="controller">
-      <input name="command" type="hidden" value="edit_user" />
-      <input name="id" type="hidden" value="${requestScope.user.id}" />
+    <form method="post" action="/users/edit/${user.id}">
+      <input name="id" type="hidden" value="${user.id}" />
       <label
         >Email:<input name="email" type="email" required value="${user.email}"
       /></label>
