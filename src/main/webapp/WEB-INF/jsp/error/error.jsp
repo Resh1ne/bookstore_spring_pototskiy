@@ -6,7 +6,10 @@
   </head>
   <body>
     <jsp:include page="../navbar.jsp" />
-    <h1>Error</h1>
-    <p>Looks like you were wrong!+.+</p>
+    <div class="error-container">
+        <h1>${statusCode}</h1>
+        <h1>Error</h1>
+        <p>${errorMessage}</p>
+    </div>
   </body>
 </html>

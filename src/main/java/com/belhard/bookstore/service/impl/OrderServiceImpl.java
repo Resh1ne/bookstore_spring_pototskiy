@@ -7,6 +7,7 @@ import com.belhard.bookstore.data.repository.OrderRepository;
 import com.belhard.bookstore.service.OrderService;
 import com.belhard.bookstore.service.dto.OrderDto;
 import com.belhard.bookstore.service.dto.OrderSimpleDto;
+import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
@@ -72,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDto getById(long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
         Hibernate.initialize(order.getItems());
         Hibernate.initialize(order.getUser());
         return toOrderDto(order);
@@ -90,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delete(long id) {
         if (!orderRepository.delete(id)) {
-            throw new RuntimeException("Order with id: " + id + " not found");
+            throw new ResourceNotFoundException("Order with id: " + id + " not found");
         }
         log.info("Deleted order with id: {}", id);
     }
