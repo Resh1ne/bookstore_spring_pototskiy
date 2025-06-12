@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserService {
     UserDto create(UserDto dto);
+    UserDto login(String email, String password);
 
     List<UserDto> getAll();
 

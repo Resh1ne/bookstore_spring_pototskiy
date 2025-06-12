@@ -4,6 +4,7 @@ import com.belhard.bookstore.data.entity.Book;
 import com.belhard.bookstore.data.repository.BookRepository;
 import com.belhard.bookstore.service.BookService;
 import com.belhard.bookstore.service.dto.BookDto;
+import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class BookServiceImpl implements BookService {
         return bookRepository
                 .findById(id)
                 .map(this::toBookDto)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
     }
 
     @Override
@@ -77,7 +78,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void delete(long id) {
         if (!bookRepository.delete(id)) {
-            throw new RuntimeException("Book with id: " + id + " not found");
+            throw new ResourceNotFoundException("Book with id: " + id + " not found");
         }
         log.info("Deleted book with id: {}", id);
     }

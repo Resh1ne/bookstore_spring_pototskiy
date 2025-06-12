@@ -5,6 +5,7 @@ import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.data.repository.UserRepository;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
+import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,16 @@ public class UserServiceImpl implements UserService {
         User userCreated = userRepository.save(validateForCreate(user));
         log.info("Created new user with id: {}", userCreated.getId());
         return toUserDto(userCreated);
+    }
+
+    @Override
+    public UserDto login(String email, String password) {
+        return userRepository.findAll()
+                .stream()
+                .map(this::toUserDto)
+                .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Account with email " + email + " and password " + password + " not found"));
     }
 
     private User validateForCreate(User user) {
@@ -61,7 +72,7 @@ public class UserServiceImpl implements UserService {
         return userRepository
                 .findById(id)
                 .map(this::toUserDto)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Override
@@ -76,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(long id) {
         if (!userRepository.delete(id)) {
-            throw new RuntimeException("User with id: " + id + " not found");
+            throw new ResourceNotFoundException("User with id: " + id + " not found");
         }
         log.info("Deleted user with id: {}", id);
     }
