@@ -6,18 +6,28 @@ import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
+@Order(1)
 @Log4j2
 public class AuthorizationFilter extends HttpFilter {
     @Override
-    protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (!req.getRequestURI().equals("/login") && !req.getRequestURI().equals("/")
-                && !req.getRequestURI().endsWith(".css") && !req.getRequestURI().equals("/users/create")) {
+    protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
+        if (requestUrlIsTrue(req)) {
             if (extracted(req, res)) return;
         }
         chain.doFilter(req, res);
+    }
+
+    private static boolean requestUrlIsTrue(HttpServletRequest req) {
+        return !req.getRequestURI().equals("/login") && !req.getRequestURI().equals("/")
+                && !req.getRequestURI().endsWith(".css") && !req.getRequestURI().equals("/users/create")
+                && !req.getRequestURI().endsWith(".jpg");
     }
 
     private static boolean extracted(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -30,4 +40,5 @@ public class AuthorizationFilter extends HttpFilter {
 
         return false;
     }
+
 }
