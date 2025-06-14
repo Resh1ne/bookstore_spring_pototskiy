@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
   <head>
     <title>Home</title>
@@ -7,6 +8,6 @@
     <jsp:include page="navbar.jsp" />
     <img src="images/img.png" alt="bookstore" />
     <h1>Welcome!</h1>
-    <p>Welcome to the main page!</p>
+    <p><spring:message code="home.greet"/></p>
   </body>
 </html>
