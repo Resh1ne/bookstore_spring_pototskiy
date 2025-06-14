@@ -3,6 +3,7 @@ package com.belhard.bookstore.service.impl;
 import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.data.repository.UserRepository;
+import com.belhard.bookstore.service.EncryptionService;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
@@ -18,9 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final EncryptionService encryptionService;
 
     @Override
     public UserDto create(UserDto dto) {
+        String originalPassword = dto.getPassword();
+        String hashedPassword = encryptionService.digest(originalPassword);
+        dto.setPassword(hashedPassword);
         User user = toUserEntity(dto);
         User userCreated = userRepository.save(validateForCreate(user));
         log.info("Created new user with id: {}", userCreated.getId());
@@ -31,8 +36,8 @@ public class UserServiceImpl implements UserService {
     public UserDto login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid email " + email));
-
-        if (user.getPassword().equals(password)) {
+        String hashedPassword = encryptionService.digest(password);
+        if (user.getPassword().equals(hashedPassword)) {
             return toUserDto(user);
         }
         throw new ResourceNotFoundException("Invalid password!");
