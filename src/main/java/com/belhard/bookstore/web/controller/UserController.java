@@ -2,6 +2,7 @@ package com.belhard.bookstore.web.controller;
 
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +48,10 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@ModelAttribute UserDto user) {
+    public String createUser(@ModelAttribute @Valid UserDto user, BindingResult result) {
+        if (result.hasErrors()) {
+            return "user/createUserForm";
+        }
         UserDto createdUser = userService.create(user);
         return "redirect:/users/" + createdUser.getId();
     }
