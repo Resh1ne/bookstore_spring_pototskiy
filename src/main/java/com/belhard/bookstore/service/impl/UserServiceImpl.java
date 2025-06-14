@@ -3,24 +3,29 @@ package com.belhard.bookstore.service.impl;
 import com.belhard.bookstore.data.entity.User;
 import com.belhard.bookstore.data.entity.enums.Role;
 import com.belhard.bookstore.data.repository.UserRepository;
+import com.belhard.bookstore.service.EncryptionService;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 @Log4j2
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final EncryptionService encryptionService;
 
     @Override
     public UserDto create(UserDto dto) {
+        String originalPassword = dto.getPassword();
+        String hashedPassword = encryptionService.digest(originalPassword);
+        dto.setPassword(hashedPassword);
         User user = toUserEntity(dto);
         User userCreated = userRepository.save(validateForCreate(user));
         log.info("Created new user with id: {}", userCreated.getId());
@@ -29,12 +34,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(String email, String password) {
-        return userRepository.findAll()
-                .stream()
-                .map(this::toUserDto)
-                .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Account with email " + email + " and password " + password + " not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email " + email));
+        String hashedPassword = encryptionService.digest(password);
+        if (user.getPassword().equals(hashedPassword)) {
+            return toUserDto(user);
+        }
+        throw new ResourceNotFoundException("Invalid password!");
     }
 
     private User validateForCreate(User user) {
@@ -58,12 +64,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<UserDto> getAll() {
+    public Page<UserDto> getAll(Pageable page) {
         return userRepository
-                .findAll()
-                .stream()
-                .map(this::toUserDto)
-                .toList();
+                .findAll(page)
+                .map(this::toUserDto);
     }
 
     @Override
@@ -86,9 +90,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) {
-        if (!userRepository.delete(id)) {
+        if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User with id: " + id + " not found");
         }
+        userRepository.deleteById(id);
         log.info("Deleted user with id: {}", id);
     }
 

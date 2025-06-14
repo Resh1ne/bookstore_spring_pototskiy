@@ -19,7 +19,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/{id}")
-    public String getOrder(@PathVariable("id") Long id, Model model) {
+    public String getOrder(@PathVariable Long id, Model model) {
         OrderDto order = orderService.getById(id);
         model.addAttribute("order", order);
         return "order/order";

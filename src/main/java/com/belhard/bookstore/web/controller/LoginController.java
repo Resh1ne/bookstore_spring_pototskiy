@@ -22,7 +22,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam("email") String email, @RequestParam("password") String password, HttpSession session) {
+    public String login(@RequestParam String email, @RequestParam String password, HttpSession session) {
         UserDto user = userService.login(email, password);
         session.setAttribute("user", user);
         return "redirect:/";

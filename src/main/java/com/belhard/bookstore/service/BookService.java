@@ -1,13 +1,13 @@
 package com.belhard.bookstore.service;
 
 import com.belhard.bookstore.service.dto.BookDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
     BookDto create(BookDto dto);
 
-    List<BookDto> getAll();
+    Page<BookDto> getAll(Pageable page);
 
     BookDto getById(long id);
 

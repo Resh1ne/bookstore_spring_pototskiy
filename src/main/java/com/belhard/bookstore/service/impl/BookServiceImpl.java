@@ -7,10 +7,10 @@ import com.belhard.bookstore.service.dto.BookDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -49,12 +49,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public List<BookDto> getAll() {
+    public Page<BookDto> getAll(Pageable page) {
         return bookRepository
-                .findAll()
-                .stream()
-                .map(this::toBookDto)
-                .toList();
+                .findAll(page)
+                .map(this::toBookDto);
     }
 
     @Override
@@ -77,9 +75,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(long id) {
-        if (!bookRepository.delete(id)) {
+        if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Book with id: " + id + " not found");
         }
+        bookRepository.deleteById(id);
         log.info("Deleted book with id: {}", id);
     }
 
