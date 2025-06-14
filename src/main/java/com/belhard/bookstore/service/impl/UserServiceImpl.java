@@ -29,12 +29,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(String email, String password) {
-        return userRepository.findAll()
-                .stream()
-                .map(this::toUserDto)
-                .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Account with email " + email + " and password " + password + " not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email " + email));
+
+        if (user.getPassword().equals(password)) {
+            return toUserDto(user);
+        }
+        throw new ResourceNotFoundException("Invalid password!");
     }
 
     private User validateForCreate(User user) {
@@ -86,9 +87,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) {
-        if (!userRepository.delete(id)) {
+        if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User with id: " + id + " not found");
         }
+        userRepository.deleteById(id);
         log.info("Deleted user with id: {}", id);
     }
 

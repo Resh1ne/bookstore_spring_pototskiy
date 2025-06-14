@@ -90,9 +90,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void delete(long id) {
-        if (!orderRepository.delete(id)) {
+        if (!orderRepository.existsById(id)) {
             throw new ResourceNotFoundException("Order with id: " + id + " not found");
         }
+        orderRepository.deleteById(id);
         log.info("Deleted order with id: {}", id);
     }
 

@@ -77,9 +77,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(long id) {
-        if (!bookRepository.delete(id)) {
+        if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Book with id: " + id + " not found");
         }
+        bookRepository.deleteById(id);
         log.info("Deleted book with id: {}", id);
     }
 
