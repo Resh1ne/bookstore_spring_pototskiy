@@ -21,7 +21,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("/{id}")
-    public String getBook(@PathVariable("id") Long id, Model model) {
+    public String getBook(@PathVariable Long id, Model model) {
         BookDto book = bookService.getById(id);
         model.addAttribute("book", book);
         model.addAttribute("date", LocalDateTime.now().toString());
@@ -47,7 +47,7 @@ public class BookController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editBookForm(@PathVariable("id") Long id, Model model) {
+    public String editBookForm(@PathVariable Long id, Model model) {
         BookDto book = bookService.getById(id);
         model.addAttribute("book", book);
         return "book/editBookForm";

@@ -21,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public String getUser(@PathVariable("id") Long id, Model model) {
+    public String getUser(@PathVariable Long id, Model model) {
         UserDto user = userService.getById(id);
         model.addAttribute("user", user);
         model.addAttribute("date", LocalDateTime.now().toString());
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editUserForm(@PathVariable("id") Long id, Model model) {
+    public String editUserForm(@PathVariable Long id, Model model) {
         UserDto user = userService.getById(id);
         model.addAttribute("user", user);
         return "user/editUserForm";
