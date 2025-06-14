@@ -3,6 +3,10 @@ package com.belhard.bookstore.web.controller;
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -29,9 +32,11 @@ public class UserController {
     }
 
     @GetMapping
-    public String getUsers(Model model) {
-        List<UserDto> users = userService.getAll();
-        model.addAttribute("users", users);
+    public String getUsers(Model model,
+                           @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable page) {
+        Page<UserDto> users = userService.getAll(page);
+        model.addAttribute("users", users.toList());
+        model.addAttribute("page", users);
         return "user/users";
     }
 

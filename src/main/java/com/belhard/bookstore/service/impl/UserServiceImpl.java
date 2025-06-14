@@ -8,10 +8,10 @@ import com.belhard.bookstore.service.dto.UserDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -59,12 +59,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<UserDto> getAll() {
+    public Page<UserDto> getAll(Pageable page) {
         return userRepository
-                .findAll()
-                .stream()
-                .map(this::toUserDto)
-                .toList();
+                .findAll(page)
+                .map(this::toUserDto);
     }
 
     @Override
