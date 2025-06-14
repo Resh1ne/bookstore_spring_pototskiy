@@ -68,4 +68,9 @@ public class UserController {
         UserDto updatedUser = userService.update(user);
         return "redirect:/users/" + updatedUser.getId();
     }
+
+    @ModelAttribute
+    public UserDto newUser() {
+        return new UserDto();
+    }
 }
