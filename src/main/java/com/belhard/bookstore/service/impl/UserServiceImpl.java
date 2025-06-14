@@ -9,6 +9,8 @@ import com.belhard.bookstore.service.dto.UserDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EncryptionService encryptionService;
+    private final MessageSource messageSource;
 
     @Override
     public UserDto create(UserDto dto) {
@@ -35,7 +38,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid email " + email));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        messageSource.getMessage("error.login.invalid", new Object[0], LocaleContextHolder.getLocale())
+                ));
         String hashedPassword = encryptionService.digest(password);
         if (user.getPassword().equals(hashedPassword)) {
             return toUserDto(user);
@@ -76,7 +81,9 @@ public class UserServiceImpl implements UserService {
         return userRepository
                 .findById(id)
                 .map(this::toUserDto)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        messageSource.getMessage("error.user.notFound", new Object[]{id}, LocaleContextHolder.getLocale())
+                ));
     }
 
     @Override
