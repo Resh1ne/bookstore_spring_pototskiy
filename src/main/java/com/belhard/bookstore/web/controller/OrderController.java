@@ -41,4 +41,12 @@ public class OrderController {
         orderService.addBookToOrder(bookId, currentUser);
         return "redirect:/books";
     }
+
+    @GetMapping("/my")
+    public String getCurrentUserOrder(HttpSession session, Model model) {
+        UserDto currentUser = (UserDto) session.getAttribute("user");
+        OrderDto order = orderService.getCurrentPendingOrder(currentUser);
+        model.addAttribute("order", order);
+        return "order/myorder";
+    }
 }

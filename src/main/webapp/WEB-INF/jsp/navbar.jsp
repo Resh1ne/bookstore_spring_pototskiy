@@ -7,7 +7,8 @@
             <li><a class="navbar_style" href="/users" onclick="navigate('allUsers')">All Users</a></li>
             <li><a class="navbar_style" href="/users/create" onclick="navigate('allUsers')">Create User</a></li>
             <li><a class="navbar_style" href="/books/create" onclick="navigate('allBooks')">Create Book</a></li>
-            <li><a class="navbar_style" href="/orders" onclick="navigate('allOrders')">Ord</a></li>
+            <li><a class="navbar_style" href="/orders" onclick="navigate('allOrders')">Orders</a></li>
+            <li><a class="navbar_style" href="/orders/my" onclick="navigate('myOrder')">My Order</a></li>
         </ul>
     </nav>
 </body>
