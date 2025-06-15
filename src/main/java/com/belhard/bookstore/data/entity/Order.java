@@ -39,7 +39,7 @@ public class Order {
     private Status status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderInfo> items;
+    private List<OrderItem> items;
 
     @Override
     public String toString() {

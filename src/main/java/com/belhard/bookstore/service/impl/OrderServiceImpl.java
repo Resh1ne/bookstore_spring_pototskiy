@@ -1,7 +1,7 @@
 package com.belhard.bookstore.service.impl;
 
 import com.belhard.bookstore.data.entity.Order;
-import com.belhard.bookstore.data.entity.OrderInfo;
+import com.belhard.bookstore.data.entity.OrderItem;
 import com.belhard.bookstore.data.repository.OrderRepository;
 import com.belhard.bookstore.service.OrderService;
 import com.belhard.bookstore.service.dto.OrderDto;
@@ -73,8 +73,8 @@ public class OrderServiceImpl implements OrderService {
     public BigDecimal calculateTotalCost(Order order) {
         BigDecimal totalCost = BigDecimal.ZERO;
 
-        for (OrderInfo orderInfo : order.getItems()) {
-            BigDecimal itemCost = orderInfo.getPrice().multiply(BigDecimal.valueOf(orderInfo.getQuantity()));
+        for (OrderItem orderItem : order.getItems()) {
+            BigDecimal itemCost = orderItem.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
             totalCost = totalCost.add(itemCost);
         }
         return totalCost;
