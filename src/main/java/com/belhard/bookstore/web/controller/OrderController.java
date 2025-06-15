@@ -53,6 +53,6 @@ public class OrderController {
     @PostMapping("/{id}/pay")
     public String payOrder(@PathVariable Long id) {
         orderService.payOrder(id);
-        return "redirect:/";
+        return "redirect:/orders/my";
     }
 }
