@@ -2,6 +2,8 @@ package com.belhard.bookstore.web.controller;
 
 import com.belhard.bookstore.service.UserService;
 import com.belhard.bookstore.service.dto.UserDto;
+import com.belhard.bookstore.service.exception.AppException;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,5 +64,15 @@ public class UserController {
     public String editUser(@ModelAttribute UserDto user) {
         UserDto updatedUser = userService.update(user);
         return "redirect:/users/" + updatedUser.getId();
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable Long id, HttpSession session) {
+        UserDto currentUser = (UserDto) session.getAttribute("user");
+        if (currentUser != null && currentUser.getId().equals(id)) {
+            throw new AppException("You can't delete yourself!");
+        }
+        userService.delete(id);
+        return "redirect:/users";
     }
 }

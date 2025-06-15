@@ -35,6 +35,9 @@
                     <td>
                         <a href="books/${book.id}" class="action-link">View</a>
                         <a href="books/edit/${book.id}" class="action-link">Edit</a>
+                        <form action="books/delete/${book.id}" method="post" class="delete-form">
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
                         <form action="orders/add/${book.id}" method="post" style="display: inline;">
                              <button type="submit" class="action-link-button">Add to order</button>
                         </form>

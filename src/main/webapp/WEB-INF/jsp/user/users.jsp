@@ -35,6 +35,14 @@
                     <td>
                         <a href="users/${user.id}" class="action-link">View</a>
                         <a href="users/edit/${user.id}" class="action-link">Edit</a>
+                        <c:if test="${user.id ne sessionScope.user.id}">
+                            <form action="users/delete/${user.id}" method="post" class="delete-form">
+                                <button type="submit" class="delete-btn"
+                                        onclick="return confirm('Are you sure you want to delete this user?')">
+                                    Delete
+                                </button>
+                            </form>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
