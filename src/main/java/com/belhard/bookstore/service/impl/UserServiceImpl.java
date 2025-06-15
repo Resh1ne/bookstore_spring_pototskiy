@@ -9,6 +9,7 @@ import com.belhard.bookstore.service.dto.UserDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,16 +21,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EncryptionService encryptionService;
+    private final ModelMapper mapper;
 
     @Override
     public UserDto create(UserDto dto) {
         String originalPassword = dto.getPassword();
         String hashedPassword = encryptionService.digest(originalPassword);
         dto.setPassword(hashedPassword);
-        User user = toUserEntity(dto);
+        User user = mapper.map(dto, User.class);
         User userCreated = userRepository.save(validateForCreate(user));
         log.info("Created new user with id: {}", userCreated.getId());
-        return toUserDto(userCreated);
+        return mapper.map(userCreated, UserDto.class);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid email " + email));
         String hashedPassword = encryptionService.digest(password);
         if (user.getPassword().equals(hashedPassword)) {
-            return toUserDto(user);
+            return mapper.map(user, UserDto.class);
         }
         throw new ResourceNotFoundException("Invalid password!");
     }
@@ -51,23 +53,12 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private User toUserEntity(UserDto dto) {
-        User userEntity = new User();
-        userEntity.setRole(dto.getRole());
-        userEntity.setPassword(dto.getPassword());
-        userEntity.setLastName(dto.getLastName());
-        userEntity.setAge(dto.getAge());
-        userEntity.setFirstName(dto.getFirstName());
-        userEntity.setEmail(dto.getEmail());
-        return userEntity;
-    }
-
     @Override
     @Transactional
     public Page<UserDto> getAll(Pageable page) {
         return userRepository
                 .findAll(page)
-                .map(this::toUserDto);
+                .map(e -> mapper.map(e, UserDto.class));
     }
 
     @Override
@@ -75,17 +66,16 @@ public class UserServiceImpl implements UserService {
     public UserDto getById(long id) {
         return userRepository
                 .findById(id)
-                .map(this::toUserDto)
+                .map(e -> mapper.map(e, UserDto.class))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Override
     public UserDto update(UserDto dto) {
-        User user = toUserEntity(dto);
-        user.setId(dto.getId());
+        User user = mapper.map(dto, User.class);
         User userCreated = userRepository.save(user);
         log.info("Updated user with id: {}", userCreated.getId());
-        return toUserDto(userCreated);
+        return mapper.map(userCreated, UserDto.class);
     }
 
     @Override
@@ -95,17 +85,5 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
         log.info("Deleted user with id: {}", id);
-    }
-
-    private UserDto toUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setAge(user.getAge());
-        userDto.setEmail(user.getEmail());
-        userDto.setId(user.getId());
-        userDto.setPassword(user.getPassword());
-        userDto.setRole(user.getRole());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        return userDto;
     }
 }

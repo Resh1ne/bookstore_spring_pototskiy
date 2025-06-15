@@ -2,7 +2,6 @@ package com.belhard.bookstore.service.impl;
 
 import com.belhard.bookstore.data.entity.Order;
 import com.belhard.bookstore.data.entity.OrderInfo;
-import com.belhard.bookstore.data.entity.enums.Status;
 import com.belhard.bookstore.data.repository.OrderRepository;
 import com.belhard.bookstore.service.OrderService;
 import com.belhard.bookstore.service.dto.OrderDto;
@@ -11,6 +10,7 @@ import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,40 +23,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
+    private final ModelMapper mapper;
 
     @Override
     public OrderDto create(OrderDto dto) {
-        Order order = toOrderEntity(dto);
+        Order order = mapper.map(dto, Order.class);
         Order orderCreated = orderRepository.save(order);
         log.info("Created new order with id: {}", orderCreated.getId());
-        return toOrderDto(orderCreated);
-    }
-
-    private OrderDto toOrderDto(Order order) {
-        OrderDto orderDto = new OrderDto();
-        orderDto.setId(order.getId());
-        orderDto.setUser(order.getUser());
-        orderDto.setItems(order.getItems());
-        orderDto.setTotalCost(order.getTotalCost());
-        orderDto.setStatus(order.getStatus());
-        return orderDto;
-    }
-
-    private OrderSimpleDto toOrderSimpleDto(Order order) {
-        OrderSimpleDto orderDto = new OrderSimpleDto();
-        orderDto.setId(order.getId());
-        orderDto.setTotalCost(order.getTotalCost());
-        orderDto.setStatus(order.getStatus());
-        return orderDto;
-    }
-
-    private Order toOrderEntity(OrderDto dto) {
-        Order entity = new Order();
-        entity.setUser(dto.getUser());
-        entity.setItems(dto.getItems());
-        entity.setTotalCost(dto.getTotalCost());
-        entity.setStatus(Status.valueOf(dto.getStatus().name()));
-        return entity;
+        return mapper.map(orderCreated, OrderDto.class);
     }
 
     @Override
@@ -65,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository
                 .findAll()
                 .stream()
-                .map(this::toOrderSimpleDto)
+                .map(e -> mapper.map(e, OrderSimpleDto.class))
                 .toList();
     }
 
@@ -76,16 +50,15 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
         Hibernate.initialize(order.getItems());
         Hibernate.initialize(order.getUser());
-        return toOrderDto(order);
+        return mapper.map(order, OrderDto.class);
     }
 
     @Override
     public OrderDto update(OrderDto dto) {
-        Order order = toOrderEntity(dto);
-        order.setId(dto.getId());
+        Order order = mapper.map(dto, Order.class);
         Order orderCreated = orderRepository.save(order);
         log.info("Updated order with id: {}", orderCreated.getId());
-        return toOrderDto(orderCreated);
+        return mapper.map(orderCreated, OrderDto.class);
     }
 
     @Override
