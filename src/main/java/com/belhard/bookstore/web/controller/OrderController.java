@@ -49,4 +49,10 @@ public class OrderController {
         model.addAttribute("order", order);
         return "order/myorder";
     }
+
+    @PostMapping("/{id}/pay")
+    public String payOrder(@PathVariable Long id) {
+        orderService.payOrder(id);
+        return "redirect:/";
+    }
 }

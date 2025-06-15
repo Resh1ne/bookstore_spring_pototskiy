@@ -15,17 +15,26 @@
             padding: 10px;
             background-color: #f9f9f9;
         }
-        .catalog-btn {
+        .catalog-btn, .pay-btn {
             display: inline-block;
             margin-top: 15px;
             padding: 8px 15px;
-            background-color: #4CAF50;
             color: white;
             text-decoration: none;
             border-radius: 4px;
+            margin-right: 10px;
+        }
+        .catalog-btn {
+            background-color: #4CAF50;
+        }
+        .pay-btn {
+            background-color: #2196F3;
         }
         .catalog-btn:hover {
             background-color: #45a049;
+        }
+        .pay-btn:hover {
+            background-color: #0b7dda;
         }
     </style>
 </head>
@@ -49,13 +58,14 @@
                     </div>
                 </c:forEach>
 
+                <c:if test="${order.status == 'PENDING'}">
+                    <form action="/orders/${order.id}/pay" method="post" style="display: inline;">
+                        <button type="submit" class="pay-btn">Pay Now</button>
+                    </form>
+                </c:if>
                 <a href="/books" class="catalog-btn">Back to Catalog</a>
             </div>
         </c:when>
-        <c:otherwise>
-            <p>${message}</p>
-            <a href="/books" class="catalog-btn">Browse Catalog</a>
-        </c:otherwise>
     </c:choose>
 </body>
 </html>

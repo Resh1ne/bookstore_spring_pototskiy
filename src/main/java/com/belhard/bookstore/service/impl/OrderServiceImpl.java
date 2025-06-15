@@ -13,6 +13,7 @@ import com.belhard.bookstore.service.dto.OrderDto;
 import com.belhard.bookstore.service.dto.OrderSimpleDto;
 import com.belhard.bookstore.service.dto.UserDto;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
+import com.belhard.bookstore.service.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
@@ -123,6 +124,25 @@ public class OrderServiceImpl implements OrderService {
             log.info("Created new pending order for user with id: {}", userDto.getId());
             return mapper.map(savedOrder, OrderDto.class);
         }
+    }
+
+    @Override
+    @Transactional
+    public void payOrder(long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+
+        if (order.getStatus() != Status.PENDING) {
+            throw new ValidationException("Only pending orders can be paid");
+        }
+        if (order.getItems() == null || order.getItems().isEmpty()) {
+            throw new ValidationException("Cannot pay empty order");
+        }
+
+        order.setStatus(Status.PAID);
+        order.setTotalCost(calculateTotalCost(order));
+        orderRepository.save(order);
+        log.info("Order {} has been paid", id);
     }
 
     @Override

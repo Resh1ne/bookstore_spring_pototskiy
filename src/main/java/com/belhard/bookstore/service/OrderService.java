@@ -19,4 +19,5 @@ public interface OrderService {
 
     OrderDto getCurrentPendingOrder(UserDto user);
     void addBookToOrder(Long bookId, UserDto user);
+    void payOrder(long id);
 }
