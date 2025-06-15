@@ -3,11 +3,14 @@ package com.belhard.bookstore.web.controller;
 import com.belhard.bookstore.service.OrderService;
 import com.belhard.bookstore.service.dto.OrderDto;
 import com.belhard.bookstore.service.dto.OrderSimpleDto;
+import com.belhard.bookstore.service.dto.UserDto;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -30,5 +33,12 @@ public class OrderController {
         List<OrderSimpleDto> orders = orderService.getAll();
         model.addAttribute("orders", orders);
         return "order/orders";
+    }
+
+    @PostMapping("/add/{bookId}")
+    public String addToCart(@PathVariable Long bookId, HttpSession session) {
+        UserDto currentUser = (UserDto) session.getAttribute("user");
+        orderService.addBookToOrder(bookId, currentUser);
+        return "redirect:/books";
     }
 }

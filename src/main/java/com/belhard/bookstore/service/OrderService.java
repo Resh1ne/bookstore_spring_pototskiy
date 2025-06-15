@@ -2,6 +2,7 @@ package com.belhard.bookstore.service;
 
 import com.belhard.bookstore.service.dto.OrderDto;
 import com.belhard.bookstore.service.dto.OrderSimpleDto;
+import com.belhard.bookstore.service.dto.UserDto;
 
 import java.util.List;
 
@@ -15,4 +16,7 @@ public interface OrderService {
     OrderDto update(OrderDto dto);
 
     void delete(long id);
+
+    OrderDto getCurrentPendingOrder(UserDto user);
+    void addBookToOrder(Long bookId, UserDto user);
 }
