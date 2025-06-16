@@ -146,6 +146,31 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
+    public void removeBookFromOrder(Long bookId, UserDto userDto) {
+        Order order = orderRepository.findByUserAndStatus(mapper.map(userDto, User.class), Status.PENDING)
+                .orElseThrow(() -> new ResourceNotFoundException("No pending order found for user"));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+
+        OrderItem item = orderItemRepository.findByOrderAndBook(order, book)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found in order"));
+
+        if (item.getQuantity() > 1) {
+            item.setQuantity(item.getQuantity() - 1);
+            orderItemRepository.save(item);
+        } else {
+            orderItemRepository.delete(item);
+            order.getItems().remove(item);
+        }
+
+        BigDecimal totalCost = calculateTotalCost(order);
+        order.setTotalCost(totalCost);
+        orderRepository.save(order);
+    }
+
+    @Override
     public OrderDto update(OrderDto dto) {
         Order order = mapper.map(dto, Order.class);
         Order orderCreated = orderRepository.save(order);

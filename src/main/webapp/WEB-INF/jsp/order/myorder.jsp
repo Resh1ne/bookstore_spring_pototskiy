@@ -30,11 +30,17 @@
         .pay-btn {
             background-color: #2196F3;
         }
+        .remove-btn {
+            background-color: #f44336;
+        }
         .catalog-btn:hover {
             background-color: #45a049;
         }
         .pay-btn:hover {
             background-color: #0b7dda;
+        }
+        .remove-btn:hover {
+            background-color: #d32f2f;
         }
     </style>
 </head>
@@ -52,13 +58,20 @@
                 <h3>Items:</h3>
                 <c:forEach items="${order.items}" var="item">
                     <div class="order-item">
-                        <p>Book: ${item.book.title}</p>
-                        <p>Price: $${item.price}</p>
-                        <p>Quantity: ${item.quantity}</p>
+                        <div class="item-info">
+                            <p>Book: ${item.book.title}</p>
+                            <p>Price: $${item.price}</p>
+                            <p>Quantity: ${item.quantity}</p>
+                        </div>
+                        <div class="item-actions">
+                            <form action="/orders/remove/${item.book.id}" method="post">
+                                <button type="submit" class="remove-btn">Remove</button>
+                            </form>
+                        </div>
                     </div>
                 </c:forEach>
 
-                <c:if test="${order.status == 'PENDING'}">
+                <c:if test="${order.status == 'PENDING' && !order.items.isEmpty()}">
                     <form action="/orders/${order.id}/pay" method="post" style="display: inline;">
                         <button type="submit" class="pay-btn">Pay Now</button>
                     </form>
@@ -66,6 +79,10 @@
                 <a href="/books" class="catalog-btn">Back to Catalog</a>
             </div>
         </c:when>
+        <c:otherwise>
+            <p>Your order is empty</p>
+            <a href="/books" class="catalog-btn">Browse Catalog</a>
+        </c:otherwise>
     </c:choose>
 </body>
 </html>

@@ -18,6 +18,10 @@ public interface OrderService {
     void delete(long id);
 
     OrderDto getCurrentPendingOrder(UserDto user);
+
     void addBookToOrder(Long bookId, UserDto user);
+
     void payOrder(long id);
+
+    void removeBookFromOrder(Long bookId, UserDto user);
 }

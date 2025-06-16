@@ -55,4 +55,11 @@ public class OrderController {
         orderService.payOrder(id);
         return "redirect:/orders/my";
     }
+
+    @PostMapping("/remove/{bookId}")
+    public String removeFromOrder(@PathVariable Long bookId, HttpSession session) {
+        UserDto currentUser = (UserDto) session.getAttribute("user");
+        orderService.removeBookFromOrder(bookId, currentUser);
+        return "redirect:/orders/my";
+    }
 }
