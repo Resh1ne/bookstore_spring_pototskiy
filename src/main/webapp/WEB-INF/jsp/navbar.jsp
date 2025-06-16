@@ -6,6 +6,7 @@
             <li><a class="navbar_style" href="/books" onclick="navigate('allBooks')">All Books</a></li>
             <li><a class="navbar_style" href="/users" onclick="navigate('allUsers')">All Users</a></li>
             <li><a class="navbar_style" href="/users/create" onclick="navigate('allUsers')">Create User</a></li>
+            <li><a class="navbar_style" href="/logout" onclick="navigate('home')">Logout</a></li>
             <li><a class="navbar_style" href="/books/create" onclick="navigate('allBooks')">Create Book</a></li>
             <li><a class="navbar_style" href="/orders" onclick="navigate('allOrders')">Orders</a></li>
             <li><a class="navbar_style" href="/orders/my" onclick="navigate('myOrder')">My Order</a></li>
