@@ -64,7 +64,10 @@ VALUES
     ('Paul', 'Smith', 'MANAGER', 'paul.smith@email.com', 'b199b11ecb0fb2a67d599ca835de9e888bc4d68e', 29),
     ('Quincy', 'Adams', 'MANAGER', 'quincy.adams@email.com', 'aa98ef9c554ec9fe1eebde2f9720a3eb7c0e278b', 27),
     ('Rachel', 'Moore', 'CUSTOMER', 'rachel.moore@email.com', '52925de3db31e18f2b83a581ec3ec5bf849ac983', 31),
-    ('Samuel', 'Jones', 'CUSTOMER', 'samuel.jones@email.com', '14373094d198573899be778b288d1b4434f7b5d6', 32);
+    ('Samuel', 'Jones', 'CUSTOMER', 'samuel.jones@email.com', '14373094d198573899be778b288d1b4434f7b5d6', 32),
+    ('Admin', 'Admin', 'ADMIN', 'admin@admin', '996d4b86c1e36c36484103bf22e3ea0b9095780c', 19),
+    ('Manager', 'Manager', 'MANAGER', 'manager@manager', 'e7a1a0f870dc1e79a0ad392e96c1c1bd1b9c328c', 19),
+    ('Customer', 'Customer', 'CUSTOMER', 'customer@customer', '443d50f0351b7cddcf5625fa2714f46fb4ea8d5c', 19);
 
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,

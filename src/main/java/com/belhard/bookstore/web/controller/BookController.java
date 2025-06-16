@@ -63,4 +63,10 @@ public class BookController {
         BookDto updatedBook = bookService.update(book);
         return "redirect:/books/" + updatedBook.getId();
     }
+
+    @PostMapping("/delete/{id}")
+    public String deleteBook(@PathVariable Long id) {
+        bookService.delete(id);
+        return "redirect:/books";
+    }
 }

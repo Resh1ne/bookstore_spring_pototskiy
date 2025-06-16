@@ -1,5 +1,6 @@
 package com.belhard.bookstore.web.controller;
 
+import com.belhard.bookstore.service.exception.AppException;
 import com.belhard.bookstore.service.exception.ResourceNotFoundException;
 import com.belhard.bookstore.service.exception.ValidationException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,13 @@ public class ExceptionHandlerController {
     public String handleValidationException(ValidationException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("statusCode", 400);
+        return "error/error";
+    }
+
+    @ExceptionHandler
+    public String handleAppException(AppException ex, Model model) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("statusCode", 403);
         return "error/error";
     }
 
