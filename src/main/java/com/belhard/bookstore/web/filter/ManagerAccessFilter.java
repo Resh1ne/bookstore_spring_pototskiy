@@ -64,8 +64,8 @@ public class ManagerAccessFilter extends HttpFilter {
 
     private static boolean extracted(HttpServletRequest req, HttpServletResponse res) throws IOException {
         UserDto user = (UserDto) req.getSession().getAttribute("user");
-
-        if (user == null || user.getRole().equals(Role.MANAGER)) {
+        if (user == null) return false;
+        if (user.getRole().equals(Role.MANAGER)) {
             res.sendRedirect("/");
             return true;
         }
