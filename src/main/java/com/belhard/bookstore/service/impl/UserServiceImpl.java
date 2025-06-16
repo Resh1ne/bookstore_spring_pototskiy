@@ -29,7 +29,8 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = encryptionService.digest(originalPassword);
         dto.setPassword(hashedPassword);
         User user = mapper.map(dto, User.class);
-        User userCreated = userRepository.save(validateForCreate(user));
+        user.setRole(Role.CUSTOMER);
+        User userCreated = userRepository.save(user);
         log.info("Created new user with id: {}", userCreated.getId());
         return mapper.map(userCreated, UserDto.class);
     }
@@ -43,14 +44,6 @@ public class UserServiceImpl implements UserService {
             return mapper.map(user, UserDto.class);
         }
         throw new ResourceNotFoundException("Invalid password!");
-    }
-
-    private User validateForCreate(User user) {
-        user.setAge(null);
-        user.setRole(Role.CUSTOMER);
-        user.setLastName(null);
-        user.setFirstName(null);
-        return user;
     }
 
     @Override

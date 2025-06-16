@@ -23,18 +23,11 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto create(BookDto dto) {
         Book book = mapper.map(dto, Book.class);
-        Book bookCreated = bookRepository.save(validateForCreate(book));
+        Book bookCreated = bookRepository.save(book);
         log.info("Created new book with id: {}", bookCreated.getId());
         return mapper.map(bookCreated, BookDto.class);
     }
 
-    private Book validateForCreate(Book book) {
-        book.setAuthor(null);
-        book.setPages(null);
-        book.setPrice(null);
-        book.setPublicationYear(null);
-        return book;
-    }
 
     @Override
     @Transactional
