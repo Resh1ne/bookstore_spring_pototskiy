@@ -25,9 +25,11 @@ public class AuthorizationFilter extends HttpFilter {
     }
 
     private static boolean requestUrlIsTrue(HttpServletRequest req) {
-        return !req.getRequestURI().equals("/login") && !req.getRequestURI().equals("/")
-                && !req.getRequestURI().endsWith(".css") && !req.getRequestURI().equals("/users/create")
-                && !req.getRequestURI().endsWith(".jpg");
+        return !req.getRequestURI().endsWith(".css") && !req.getRequestURI().endsWith(".png")
+                && !req.getRequestURI().equals("/login")
+                && !req.getRequestURI().equals("/logout")
+                && !req.getRequestURI().equals("/")
+                && !req.getRequestURI().equals("/users/create");
     }
 
     private static boolean extracted(HttpServletRequest req, HttpServletResponse res) throws IOException {
