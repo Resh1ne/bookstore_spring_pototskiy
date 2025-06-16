@@ -34,12 +34,21 @@
                     <td>$${book.price}</td>
                     <td>
                         <a href="books/${book.id}" class="action-link">View</a>
-                        <a href="books/edit/${book.id}" class="action-link">Edit</a>
-                        <form action="books/delete/${book.id}" method="post" class="delete-form">
-                            <button type="submit" class="delete-btn">Delete</button>
-                        </form>
+
+                        <!-- Показывать Edit только для ADMIN и MANAGER -->
+                        <c:if test="${sessionScope.user.role == 'ADMIN' || sessionScope.user.role == 'MANAGER'}">
+                            <a href="books/edit/${book.id}" class="action-link">Edit</a>
+                        </c:if>
+
+                        <!-- Показывать Delete только для ADMIN и MANAGER -->
+                        <c:if test="${sessionScope.user.role == 'ADMIN' || sessionScope.user.role == 'MANAGER'}">
+                            <form action="books/delete/${book.id}" method="post" class="delete-form">
+                                <button type="submit" class="delete-btn">Delete</button>
+                            </form>
+                        </c:if>
+
                         <form action="orders/add/${book.id}" method="post" style="display: inline;">
-                             <button type="submit" class="action-link-button">Add to order</button>
+                            <button type="submit" class="action-link-button">Add to order</button>
                         </form>
                     </td>
                 </tr>
